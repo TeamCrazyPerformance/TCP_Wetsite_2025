@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP About - Team Crazy Performance | 컴퓨터공학 동아리</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 197, 230, 0.3);
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Accordion Styles */
+        .accordion-item {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .accordion-item:hover {
+            border-color: rgba(168, 197, 230, 0.3);
+        }
+        
+        .accordion-header {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .accordion-header:hover {
+            background: linear-gradient(135deg, var(--light-gray), var(--secondary-gray));
+        }
+        
+        .accordion-header.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: var(--primary-black);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(42, 42, 42, 0.5);
+        }
+        
+        .accordion-content.active {
+            max-height: 1000px;
+        }
+        
+        .accordion-body {
+            padding: 20px;
+        }
+        
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .accordion-icon.rotate {
+            transform: rotate(180deg);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .activity-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 4px;
+        }
+        
+        .tag-competition {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+        
+        .tag-study {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+        
+        .tag-project {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+        
+        .tag-event {
+            background: rgba(168, 85, 247, 0.2);
+            color: #d8b4fe;
+        }
+        
+        .tag-achievement {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10">
+                        <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h1 class="orbitron text-xl font-bold gradient-text">TCP</h1>
+                        <p class="text-xs text-gray-400">Team Crazy Performance</p>
+                    </div>
+                </a>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="about.html" class="nav-link orbitron text-sm font-medium text-blue-300 hover:text-white">About</a>
+                    <a href="members.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Members</a>
+                    <a href="recruitment.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Recruitment</a>
+                    <a href="announcement.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Announcement</a>
+                    <a href="study.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Study</a>
+                    <a href="team.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Find Your Team</a>
+                </nav>
+                
+                <!-- User indicator -->
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                    <div class="flex items-center space-x-2">
+                        <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                        <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                    </div>
+                    <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                </div>
+                
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-white"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="pt-24 pb-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <div class="mb-8">
+                    <div class="w-24 h-24 mx-auto">
+                        <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                    </div>
+                    <h1 class="orbitron text-5xl md:text-6xl font-black mb-4">
+                        <span class="gradient-text">TCP</span>
+                    </h1>
+                    <p class="orbitron text-xl md:text-2xl text-gray-300 mb-6">Team Crazy Performance</p>
+                    <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                        엘리트 개발자들의 모임, <span class="orbitron">TCP</span>는 뛰어난 실력을 가진 학생 개발자들이 모여 함께 성장하고 도전하는 컴퓨터공학 동아리입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4"><span class="orbitron">TCP</span> 소개</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    <span class="orbitron">Team Crazy Performance</span>는 단순한 동아리가 아닙니다. 
+                    우리는 개발자로서의 꿈을 현실로 만들어가는 여정을 함께하는 파트너입니다.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="scroll-fade">
+                    <h3 class="text-2xl font-bold mb-6 text-blue-300">우리의 가치</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold mb-1"><span class="orbitron">Excellence</span> (탁월함)</h4>
+                                <p class="text-gray-400 text-sm">최고 수준의 코드 품질과 개발 역량 추구</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold mb-1"><span class="orbitron">Collaboration</span> (협력)</h4>
+                                <p class="text-gray-400 text-sm">팀워크를 통한 시너지 효과 극대화</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold mb-1"><span class="orbitron">Innovation</span> (혁신)</h4>
+                                <p class="text-gray-400 text-sm">새로운 기술과 아이디어를 통한 지속적 발전</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="scroll-fade">
+                    <h3 class="text-2xl font-bold mb-6 text-purple-300"><span class="orbitron">TCP</span>의 미션</h3>
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-2xl">
+                        <p class="text-gray-300 leading-relaxed">
+                            <span class="orbitron">TCP</span>는 기술적 탁월성과 창의적 엔지니어링 프로젝트에 중점을 두는 엘리트 소규모 대학 개발자 동아리입니다. 
+                            우리는 실제 소프트웨어 및 하드웨어 개발을 통해 실무 경험을 쌓고, 업계 선도 기업으로의 진출을 목표로 합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-gradient-to-b from-transparent to-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4">현재 현황</h2>
+                <p class="text-xl text-gray-300"><span class="orbitron">TCP</span>의 성장과 성과를 한눈에 확인하세요</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <div class="text-3xl font-bold gradient-text mb-2 counter">2021</div>
+                    <div class="text-sm text-gray-400">창립년도</div>
+                    <i class="fas fa-calendar-alt text-blue-400 text-2xl mt-3"></i>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-3xl font-bold gradient-text mb-2 counter">50+</div>
+                    <div class="text-sm text-gray-400">총 멤버수 (활동 + 졸업생)</div>
+                    <i class="fas fa-users text-purple-400 text-2xl mt-3"></i>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-3xl font-bold gradient-text mb-2 counter">30+</div>
+                    <div class="text-sm text-gray-400">기술 스터디 그룹</div>
+                    <i class="fas fa-book text-green-400 text-2xl mt-3"></i>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-3xl font-bold gradient-text mb-2 counter">15+</div>
+                    <div class="text-sm text-gray-400">국내외 대회 수상</div>
+                    <i class="fas fa-trophy text-yellow-400 text-2xl mt-3"></i>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div class="stat-card">
+                    <div class="text-3xl font-bold gradient-text mb-2 counter">25+</div>
+                    <div class="text-sm text-gray-400">프로젝트 완료 (내부 + 오픈소스)</div>
+                    <i class="fas fa-code-branch text-pink-400 text-2xl mt-3"></i>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-3xl font-bold gradient-text mb-2 counter">95%</div>
+                    <div class="text-sm text-gray-400">졸업생 IT 취업률</div>
+                    <i class="fas fa-briefcase text-cyan-400 text-2xl mt-3"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4">연도별 활동 히스토리</h2>
+                <p class="text-xl text-gray-300"><span class="orbitron">TCP</span>의 성장 과정과 주요 마일스톤을 확인하세요</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(0)">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                <span class="orbitron font-bold text-white">24</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold"><span class="orbitron">2024</span>년</h3>
+                                <p class="text-sm text-gray-400">시스템 혁신 및 규모 확장의 해</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                    <div class="accordion-content" id="accordion-0">
+                        <div class="accordion-body">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-blue-300">주요 성과</h4>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>내부 코드 리뷰 시스템 런칭</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>AI 기반 학습 플랫폼 개발</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>50명 돌파 (역대 최대 규모)</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-purple-300">주요 활동</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="activity-tag tag-project">시스템 개발</span>
+                                        <span class="activity-tag tag-study">AI/ML 스터디</span>
+                                        <span class="activity-tag tag-event">신입생 환영회</span>
+                                        <span class="activity-tag tag-competition">국제 해커톤</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(1)">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                                <span class="orbitron font-bold text-white">23</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold"><span class="orbitron">2023</span>년</h3>
+                                <p class="text-sm text-gray-400">팀워크 강화 및 네트워킹 확대</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                    <div class="accordion-content" id="accordion-1">
+                        <div class="accordion-body">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-green-300">주요 성과</h4>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>인제 MT 성공적 개최</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>30명 회원 달성</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>오픈소스 프로젝트 3개 출시</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-blue-300">주요 활동</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="activity-tag tag-event">인제 MT</span>
+                                        <span class="activity-tag tag-project">오픈소스 개발</span>
+                                        <span class="activity-tag tag-study">웹 개발 스터디</span>
+                                        <span class="activity-tag tag-competition">창업 경진대회</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(2)">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-red-500 rounded-full flex items-center justify-center">
+                                <span class="orbitron font-bold text-white">22</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold"><span class="orbitron">2022</span>년</h3>
+                                <p class="text-sm text-gray-400">대외활동 확장 및 수상 성과</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                    <div class="accordion-content" id="accordion-2">
+                        <div class="accordion-body">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-yellow-300">주요 성과</h4>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-trophy text-yellow-400"></i>
+                                            <span>전국 AI 해커톤 1위 수상</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>첫 번째 대형 프로젝트 완료</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>멘토-멘티 시스템 구축</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-red-300">주요 활동</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="activity-tag tag-achievement">AI 해커톤 1위</span>
+                                        <span class="activity-tag tag-project">대형 프로젝트</span>
+                                        <span class="activity-tag tag-study">알고리즘 스터디</span>
+                                        <span class="activity-tag tag-event">멘토링 시스템</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(3)">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <span class="orbitron font-bold text-white">21</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold"><span class="orbitron">2021</span>년</h3>
+                                <p class="text-sm text-gray-400">TCP 창립 및 기반 구축</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                    <div class="accordion-content" id="accordion-3">
+                        <div class="accordion-body">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-purple-300">주요 성과</h4>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-star text-purple-400"></i>
+                                            <span>TCP 동아리 공식 창립</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>초기 멤버 15명 모집</span>
+                                        </li>
+                                        <li class="flex items-center space-x-2">
+                                            <i class="fas fa-check text-green-400"></i>
+                                            <span>첫 번째 스터디 그룹 운영</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-3 text-pink-300">주요 활동</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="activity-tag tag-event">동아리 창립</span>
+                                        <span class="activity-tag tag-study">기초 스터디</span>
+                                        <span class="activity-tag tag-project">첫 프로젝트</span>
+                                        <span class="activity-tag tag-event">창립 파티</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gradient-to-r from-blue-900 via-purple-900 to-pink-900">
+        <div class="container mx-auto px-4 text-center">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-black mb-6 text-white">
+                    <span class="orbitron">TCP</span>와 함께 개발자의 길을 걸어보세요
+                </h2>
+                <p class="text-xl text-gray-200 mb-8">
+                    뛰어난 동료들과 함께 성장하고, 실무 경험을 쌓으며, 개발자로서의 꿈을 현실로 만들어보세요.
+                </p>
+                <a href="recruitment.html" class="cta-button px-12 py-4 rounded-full text-lg font-bold text-white hover:text-black transition-colors">
+                    <i class="fas fa-users mr-2"></i>
+                    지금 지원하기
+                </a>
+                <p class="text-sm text-gray-300 mt-4">
+                    * 지원 기간: 매 학기 시작 2주 전 ~ 개강 후 1주
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black border-t border-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10">
+                            <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                        </div>
+                        <h3 class="orbitron text-lg font-bold gradient-text">TCP</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Team Crazy Performance<br>
+                        컴퓨터공학 동아리
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">임원진</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div><span class="text-blue-300">회장:</span> 김TCP</div>
+                        <div><span class="text-purple-300">부회장:</span> 이Performance</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">연락처</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div class="flex items-center space-x-2"><i class="fas fa-phone text-blue-400"></i><span>010-1234-5678</span></div>
+                        <div class="flex items-center space-x-2"><i class="fas fa-envelope text-purple-400"></i><span>tcp@university.ac.kr</span></div>
+                        <div class="flex items-center space-x-2"><i class="fab fa-instagram text-pink-400"></i><a href="#" class="hover:text-pink-300 transition-colors">@tcp_official</a></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">법적 정보</h4>
+                    <div class="space-y-2 text-sm">
+                        <div><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">이용약관</a></div>
+                        <div><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">개인정보처리방침</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-400">© 2024 TCP (Team Crazy Performance). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Accordion functionality
+        function toggleAccordion(index) {
+            const content = document.getElementById(`accordion-${index}`);
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            
+            document.querySelectorAll('.accordion-content').forEach((item, i) => {
+                if (i !== index) {
+                    item.classList.remove('active');
+                    item.previousElementSibling.classList.remove('active');
+                    item.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate');
+                }
+            });
+            
+            content.classList.toggle('active');
+            header.classList.toggle('active');
+            icon.classList.toggle('rotate');
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-fade').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize first accordion as open
+            toggleAccordion(0);
+
+            // Counter Up Animation
+            const counterObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const originalText = counter.textContent;
+                        const target = parseInt(originalText.replace(/[^0-9]/g, ''));
+                        const suffix = originalText.replace(/[0-9]/g, '');
+
+                        if (isNaN(target)) return;
+
+                        let startTime = null;
+                        const duration = 2000; // Animation duration in ms
+
+                        const animate = (timestamp) => {
+                            if (!startTime) startTime = timestamp;
+                            const progress = timestamp - startTime;
+                            const current = Math.min(Math.floor(progress / duration * target), target);
+                            
+                            counter.textContent = current + suffix;
+
+                            if (progress < duration) {
+                                requestAnimationFrame(animate);
+                            } else {
+                                counter.textContent = originalText; // Set to the final exact text
+                            }
+                        };
+
+                        requestAnimationFrame(animate);
+                        observer.unobserve(counter); // Stop observing once the animation has been triggered
+                    }
+                });
+            }, {
+                threshold: 0.5 // Trigger when 50% of the element is visible
+            });
+
+            document.querySelectorAll('.counter').forEach(counter => {
+                counterObserver.observe(counter);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - 참여 스터디 목록 | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        
+        .sidebar-link.active {
+            background-color: rgba(168, 197, 230, 0.2);
+            color: #ffffff;
+        }
+        
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        
+        .study-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .study-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .study-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .study-card.completed::before {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-ongoing {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+        }
+        
+        .status-completed {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            color: #ffffff;
+        }
+        
+        .tech-tag {
+            background: rgba(168, 197, 230, 0.2);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.125rem;
+            display: inline-block;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+            border-color: transparent;
+        }
+        
+        .filter-tab:hover:not(.active) {
+            border-color: rgba(168, 197, 230, 0.5);
+            color: #ffffff;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">My Page</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">개인 정보</h3>
+                    <a href="mypage.html" class="sidebar-link">
+                        <i class="fas fa-user"></i><span class="ml-2">프로필 보기/수정</span>
+                    </a>
+                    <a href="mypage_memberpagesetting.html" class="sidebar-link">
+                        <i class="fas fa-eye"></i><span class="ml-2">멤버 페이지 공개 설정</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">활동 관리</h3>
+                    <a href="mypage_study.html" class="sidebar-link active">
+                        <i class="fas fa-book"></i><span class="ml-2">참여 스터디 목록</span>
+                    </a>
+                    <a href="mypage_team.html" class="sidebar-link">
+                        <i class="fas fa-users"></i><span class="ml-2">팀 구성 이력</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">계정 관리</h3>
+                    <a href="mypage_settings.html" class="sidebar-link">
+                        <i class="fas fa-cog"></i><span class="ml-2">개인정보 수정</span>
+                    </a>
+                    <a href="mypage_withdraw.html" class="sidebar-link text-red-400">
+                        <i class="fas fa-sign-out-alt"></i><span class="ml-2">탈퇴 신청</span>
+                    </a>
+                </div>
+
+                <div class="pt-4 border-t border-gray-700">
+                    <a href="index.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">메인 페이지로</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="text-2xl font-bold text-white hidden md:block">참여 스터디 목록</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <!-- Page Title and Stats -->
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold gradient-text mb-2">참여 스터디 목록</h3>
+                        <p class="text-gray-400 mb-6">TCP에서 참여했던 모든 스터디 활동을 확인할 수 있습니다.</p>
+                        
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="widget-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold gradient-text">8</div>
+                                <div class="text-sm text-gray-400">총 참여 스터디</div>
+                            </div>
+                            <div class="widget-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-blue-400">2</div>
+                                <div class="text-sm text-gray-400">진행 중</div>
+                            </div>
+                            <div class="widget-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-green-400">6</div>
+                                <div class="text-sm text-gray-400">완료</div>
+                            </div>
+                            <div class="widget-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-purple-400">750</div>
+                                <div class="text-sm text-gray-400">총 활동 시간</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="mb-6">
+                        <div class="flex space-x-2">
+                            <button class="filter-tab active" data-filter="all">전체</button>
+                            <button class="filter-tab" data-filter="ongoing">진행 중</button>
+                            <button class="filter-tab" data-filter="completed">완료</button>
+                        </div>
+                    </div>
+
+                    <!-- Ongoing Studies Section -->
+                    <section id="ongoing-section" class="mb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-2xl font-bold text-white flex items-center">
+                                <i class="fas fa-play-circle text-blue-400 mr-3"></i>진행 중인 스터디
+                                <span class="ml-2 text-sm bg-blue-500 bg-opacity-20 text-blue-400 px-2 py-1 rounded-full">2</span>
+                            </h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="ongoing-studies">
+                            <!-- Ongoing Study Card 1 -->
+                            <div class="study-card p-6 rounded-xl card-hover" data-status="ongoing" onclick="openStudyModal('study1')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">React 심화 스터디</h5>
+                                    <span class="status-badge status-ongoing">진행중</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2024.03 - 2024.06</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">8명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-clock text-purple-400 w-4"></i>
+                                        <span class="ml-2">주 2회, 오후 7시</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between text-sm text-gray-400 mb-2">
+                                        <span>진행률</span>
+                                        <span>65%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">React</span>
+                                    <span class="tech-tag">TypeScript</span>
+                                    <span class="tech-tag">Next.js</span>
+                                </div>
+                            </div>
+
+                            <!-- Ongoing Study Card 2 -->
+                            <div class="study-card p-6 rounded-xl card-hover" data-status="ongoing" onclick="openStudyModal('study2')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">알고리즘 문제 해결</h5>
+                                    <span class="status-badge status-ongoing">진행중</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2024.02 - 2024.05</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">6명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-clock text-purple-400 w-4"></i>
+                                        <span class="ml-2">주 3회, 오후 8시</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between text-sm text-gray-400 mb-2">
+                                        <span>진행률</span>
+                                        <span>80%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 80%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">Python</span>
+                                    <span class="tech-tag">C++</span>
+                                    <span class="tech-tag">Algorithm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Completed Studies Section -->
+                    <section id="completed-section" class="mb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-2xl font-bold text-white flex items-center">
+                                <i class="fas fa-check-circle text-green-400 mr-3"></i>완료된 스터디
+                                <span class="ml-2 text-sm bg-green-500 bg-opacity-20 text-green-400 px-2 py-1 rounded-full">6</span>
+                            </h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="completed-studies">
+                            <!-- Completed Study Cards -->
+                            <div class="study-card completed p-6 rounded-xl card-hover" data-status="completed" onclick="openStudyModal('study3')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">Spring Boot 백엔드</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2023.09 - 2023.12</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">7명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">수료 완료</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">Spring Boot</span>
+                                    <span class="tech-tag">Java</span>
+                                    <span class="tech-tag">MySQL</span>
+                                </div>
+                            </div>
+
+                            <div class="study-card completed p-6 rounded-xl card-hover" data-status="completed" onclick="openStudyModal('study4')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">데이터 사이언스 기초</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2023.03 - 2023.06</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">10명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">수료 완료</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">Python</span>
+                                    <span class="tech-tag">Pandas</span>
+                                    <span class="tech-tag">NumPy</span>
+                                </div>
+                            </div>
+
+                            <div class="study-card completed p-6 rounded-xl card-hover" data-status="completed" onclick="openStudyModal('study5')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">JavaScript 마스터</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2022.09 - 2022.12</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">12명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">수료 완료</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">JavaScript</span>
+                                    <span class="tech-tag">ES6+</span>
+                                    <span class="tech-tag">DOM</span>
+                                </div>
+                            </div>
+
+                            <div class="study-card completed p-6 rounded-xl card-hover" data-status="completed" onclick="openStudyModal('study6')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">Unity 게임 개발</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2022.03 - 2022.06</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">5명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">수료 완료</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">Unity</span>
+                                    <span class="tech-tag">C#</span>
+                                    <span class="tech-tag">Game Dev</span>
+                                </div>
+                            </div>
+
+                            <div class="study-card completed p-6 rounded-xl card-hover" data-status="completed" onclick="openStudyModal('study7')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">iOS 앱 개발</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2021.09 - 2021.12</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">6명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">수료 완료</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">Swift</span>
+                                    <span class="tech-tag">UIKit</span>
+                                    <span class="tech-tag">iOS</span>
+                                </div>
+                            </div>
+
+                            <div class="study-card completed p-6 rounded-xl card-hover" data-status="completed" onclick="openStudyModal('study8')">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">C 프로그래밍 기초</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2021.03 - 2021.06</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-users text-green-400 w-4"></i>
+                                        <span class="ml-2">15명 참여</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">수료 완료</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap">
+                                    <span class="tech-tag">C</span>
+                                    <span class="tech-tag">Programming</span>
+                                    <span class="tech-tag">Basic</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Study Detail Modal -->
+    <div id="study-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="modal-title" class="text-2xl font-bold gradient-text">스터디 상세 정보</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="modal-content" class="space-y-4">
+                <!-- Modal content will be dynamically filled -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Filter functionality
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const studyCards = document.querySelectorAll('.study-card');
+        const ongoingSection = document.getElementById('ongoing-section');
+        const completedSection = document.getElementById('completed-section');
+
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const filter = tab.dataset.filter;
+                
+                // Show/hide sections and cards based on filter
+                if (filter === 'all') {
+                    ongoingSection.style.display = 'block';
+                    completedSection.style.display = 'block';
+                    studyCards.forEach(card => card.style.display = 'block');
+                } else if (filter === 'ongoing') {
+                    ongoingSection.style.display = 'block';
+                    completedSection.style.display = 'none';
+                    studyCards.forEach(card => {
+                        card.style.display = card.dataset.status === 'ongoing' ? 'block' : 'none';
+                    });
+                } else if (filter === 'completed') {
+                    ongoingSection.style.display = 'none';
+                    completedSection.style.display = 'block';
+                    studyCards.forEach(card => {
+                        card.style.display = card.dataset.status === 'completed' ? 'block' : 'none';
+                    });
+                }
+            });
+        });
+
+        // Study data
+        const studyData = {
+            study1: {
+                title: 'React 심화 스터디',
+                status: '진행중',
+                period: '2024.03 - 2024.06',
+                schedule: '매주 화요일, 목요일 오후 7시',
+                location: '온라인 (Zoom)',
+                members: 8,
+                description: 'React의 고급 패턴과 성능 최적화, 상태 관리 라이브러리 등을 학습하는 심화 스터디입니다.',
+                techStack: ['React', 'TypeScript', 'Next.js', 'Redux Toolkit'],
+                progress: 65,
+                assignments: ['Hook 패턴 연구', 'Context API 활용', '성능 최적화 실습'],
+                links: ['https://github.com/tcp-react-study', 'https://notion.so/react-study']
+            },
+            study2: {
+                title: '알고리즘 문제 해결',
+                status: '진행중',
+                period: '2024.02 - 2024.05',
+                schedule: '매주 월요일, 수요일, 금요일 오후 8시',
+                location: '온라인 (Discord)',
+                members: 6,
+                description: '코딩 테스트 대비를 위한 알고리즘 문제 해결 스터디입니다.',
+                techStack: ['Python', 'C++', 'Algorithm', 'DataStructure'],
+                progress: 80,
+                assignments: ['백준 문제 풀이', 'LeetCode 도전', '프로그래머스 레벨업'],
+                links: ['https://github.com/tcp-algorithm', 'https://solved.ac/tcp-team']
+            },
+            study3: {
+                title: 'Spring Boot 백엔드',
+                status: '완료',
+                period: '2023.09 - 2023.12',
+                schedule: '매주 토요일 오후 2시',
+                location: '학교 강의실',
+                members: 7,
+                description: 'Spring Boot를 활용한 백엔드 개발 전반을 학습했습니다.',
+                techStack: ['Spring Boot', 'Java', 'MySQL', 'JPA'],
+                progress: 100,
+                assignments: ['RESTful API 구현', '데이터베이스 설계', '프로젝트 완성'],
+                links: ['https://github.com/tcp-springboot']
+            }
+        };
+
+        // Modal functions
+        function openStudyModal(studyId) {
+            const study = studyData[studyId];
+            if (!study) return;
+
+            document.getElementById('modal-title').textContent = study.title;
+            
+            const modalContent = document.getElementById('modal-content');
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-white mb-2">기본 정보</h4>
+                        <div class="space-y-2 text-sm text-gray-300">
+                            <div><strong>상태:</strong> <span class="status-badge ${study.status === '진행중' ? 'status-ongoing' : 'status-completed'}">${study.status}</span></div>
+                            <div><strong>기간:</strong> ${study.period}</div>
+                            <div><strong>일정:</strong> ${study.schedule}</div>
+                            <div><strong>장소:</strong> ${study.location}</div>
+                            <div><strong>참여자:</strong> ${study.members}명</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-white mb-2">기술 스택</h4>
+                        <div class="flex flex-wrap">
+                            ${study.techStack.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-2">스터디 소개</h4>
+                    <p class="text-gray-300">${study.description}</p>
+                </div>
+                
+                ${study.progress < 100 ? `
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-2">진행률</h4>
+                    <div class="progress-bar mb-2">
+                        <div class="progress-fill" style="width: ${study.progress}%"></div>
+                    </div>
+                    <div class="text-sm text-gray-400">${study.progress}% 완료</div>
+                </div>
+                ` : ''}
+                
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-2">주요 과제/활동</h4>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        ${study.assignments.map(assignment => `<li>${assignment}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                ${study.links ? `
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-2">관련 링크</h4>
+                    <div class="space-y-2">
+                        ${study.links.map(link => `
+                            <a href="${link}" target="_blank" class="block text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>${link}
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('study-modal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('study-modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('study-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'study-modal') {
+                closeModal();
+            }
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // Add sample data for remaining studies
+        const additionalStudyData = {
+            study4: { title: '데이터 사이언스 기초', status: '완료', period: '2023.03 - 2023.06', schedule: '매주 수요일 오후 7시', location: '온라인', members: 10, description: 'Python을 활용한 데이터 분석과 시각화를 학습했습니다.', techStack: ['Python', 'Pandas', 'NumPy', 'Matplotlib'], progress: 100, assignments: ['데이터 전처리', '통계 분석', '시각화 프로젝트'] },
+            study5: { title: 'JavaScript 마스터', status: '완료', period: '2022.09 - 2022.12', schedule: '매주 목요일 오후 6시', location: '학교 강의실', members: 12, description: 'JavaScript의 기초부터 고급 기능까지 전반적으로 학습했습니다.', techStack: ['JavaScript', 'ES6+', 'DOM', 'Async/Await'], progress: 100, assignments: ['DOM 조작', 'API 연동', '프로젝트 완성'] },
+            study6: { title: 'Unity 게임 개발', status: '완료', period: '2022.03 - 2022.06', schedule: '매주 토요일 오후 1시', location: '학교 실습실', members: 5, description: 'Unity 엔진을 활용한 2D/3D 게임 개발을 학습했습니다.', techStack: ['Unity', 'C#', 'Game Dev', '2D/3D'], progress: 100, assignments: ['게임 기획', '캐릭터 제작', '게임 완성'] },
+            study7: { title: 'iOS 앱 개발', status: '완료', period: '2021.09 - 2021.12', schedule: '매주 일요일 오후 3시', location: '온라인', members: 6, description: 'Swift를 활용한 iOS 네이티브 앱 개발을 학습했습니다.', techStack: ['Swift', 'UIKit', 'iOS', 'Xcode'], progress: 100, assignments: ['UI 구현', '데이터 관리', '앱 출시'] },
+            study8: { title: 'C 프로그래밍 기초', status: '완료', period: '2021.03 - 2021.06', schedule: '매주 화요일, 목요일 오후 5시', location: '학교 강의실', members: 15, description: 'C 언어의 기초 문법과 프로그래밍 개념을 학습했습니다.', techStack: ['C', 'Programming', 'Basic', 'Algorithm'], progress: 100, assignments: ['기초 문법', '자료구조', '프로젝트'] }
+        };
+
+        // Merge additional data
+        Object.assign(studyData, additionalStudyData);
+    </script>
+</body>
+</html>

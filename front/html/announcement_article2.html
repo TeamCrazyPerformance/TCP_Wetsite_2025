@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - 2025 TCP 해커톤 대회 참가 신청 안내</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body { font-family: 'Spoqa Han Sans Neo', sans-serif; background-color: var(--primary-black); color: #ffffff; }
+        .orbitron { font-family: 'Orbitron', monospace; }
+        .gradient-text { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(168,197,230,0.2); }
+        .nav-link { position: relative; transition: all 0.3s ease; }
+        .nav-link::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+        .cta-button { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); transition: all 0.3s ease; }
+        .cta-button:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(168,197,230,0.3); }
+        .article-content { background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray)); border: 1px solid rgba(255,255,255,0.1); }
+        .article-meta { background: var(--secondary-gray); border: 1px solid rgba(255,255,255,0.1); }
+        .scroll-fade { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+        .scroll-fade.visible { opacity: 1; transform: translateY(0); }
+        .back-button { background: linear-gradient(135deg, var(--light-gray), var(--secondary-gray)); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; }
+        .back-button:hover { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(168,197,230,0.3); }
+        .article-body { line-height: 1.8; }
+        .article-body p { margin-bottom: 1.5rem; }
+        .article-body h3 { color: var(--accent-purple); margin-top: 2rem; margin-bottom: 1rem; }
+        .tag { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: var(--primary-black); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10"><img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain"></div>
+                    <div><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1><p class="text-xs text-gray-400">Team Crazy Performance</p></div>
+                </a>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="about.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">About</a>
+                    <a href="members.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Members</a>
+                    <a href="recruitment.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Recruitment</a>
+                    <a href="announcement.html" class="nav-link orbitron text-sm font-medium text-white">Announcement</a>
+                    <a href="study.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Study</a>
+                    <a href="team.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Find Your Team</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                    <div class="flex items-center space-x-2">
+                        <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                        <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                    </div>
+                    <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                </div>
+                
+                <button class="md:hidden"><i class="fas fa-bars text-white"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20 pb-16 min-h-screen">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="mb-8 scroll-fade">
+                <a href="announcement.html" class="back-button inline-flex items-center px-6 py-3 rounded-lg text-sm font-medium">
+                    <i class="fas fa-arrow-left mr-2"></i>공지사항 목록으로 돌아가기
+                </a>
+            </div>
+            <article class="scroll-fade">
+                <header class="mb-8">
+                    <div class="mb-4"><span class="tag px-3 py-1 rounded-full text-xs">공지사항</span></div>
+                    <h1 class="text-3xl md:text-5xl font-bold mb-6 gradient-text">2025 TCP 해커톤 대회 참가 신청 안내</h1>
+                    <div class="article-meta rounded-lg p-6 mb-8">
+                        <div class="flex flex-wrap items-center justify-between text-sm text-gray-300">
+                            <div class="flex items-center space-x-6 mb-2 md:mb-0">
+                                <div class="flex items-center space-x-2"><i class="fas fa-user text-purple-400"></i><span>작성자: 관리자</span></div>
+                                <div class="flex items-center space-x-2"><i class="fas fa-calendar text-purple-400"></i><span>2025년 6월 10일</span></div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2"><i class="fas fa-eye text-green-400"></i><span>조회 312</span></div>
+                                <div class="flex items-center space-x-2"><i class="fas fa-heart text-pink-400"></i><span>좋아요 24</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div class="article-content rounded-lg p-8 mb-8">
+                    <div class="article-body text-gray-200">
+                        <p class="text-lg font-medium text-purple-300 mb-6">안녕하세요 TCP 회원 여러분, 올여름 해커톤 대회를 안내드립니다!</p>
+                        <p>TCP에서는 창의적인 프로젝트 아이디어를 실현하고, 팀워크를 강화할 수 있는 2025 TCP 해커톤 대회를 개최합니다. 많은 관심과 참여 부탁드립니다.</p>
+                        <h3 class="text-xl font-bold">🔧 대회 주제</h3>
+                        <ul class="list-disc list-inside ml-4 space-y-2 text-gray-300">
+                            <li>IoT 기반 스마트 디바이스</li>
+                            <li>웹/모바일 애플리케이션 개발</li>
+                            <li>AI 및 머신러닝 활용</li>
+                            <li>자율주행 및 로보틱스</li>
+                        </ul>
+                        <h3 class="text-xl font-bold">🗓️ 대회 일정</h3>
+                        <p>대회는 <strong>2025년 6월 20일 오후 1시</strong>부터<br><strong>6월 21일 오후 6시</strong>까지 공학관 1층 로비에서 진행됩니다.</p>
+                        <h3 class="text-xl font-bold">💡 참여 방법</h3>
+                        <p>아래 링크의 구글 폼을 통해 팀 소개 및 프로젝트 아이디어를 작성하여 신청해 주세요.</p>
+                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-6 my-8">
+                            <div class="flex items-center space-x-3 mb-4"><i class="fas fa-link text-white text-2xl"></i><h4 class="text-lg font-bold text-white">신청서 링크</h4></div>
+                            <a href="#" class="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-colors"><i class="fab fa-google mr-2"></i>해커톤 신청하기</a>
+                        </div>
+                        <h3 class="text-xl font-bold">🎁 시상 내역</h3>
+                        <ul class="list-disc list-inside ml-4 space-y-2 text-gray-300">
+                            <li>대상(1팀): 상금 50만원 및 상장</li>
+                            <li>최우수상(2팀): 상금 30만원 및 상장</li>
+                            <li>우수상(3팀): 상금 10만원 및 상장</li>
+                        </ul>
+                        <div class="bg-gray-800 rounded-lg p-6 mt-8">
+                            <h4 class="text-lg font-bold text-purple-300 mb-4">문의 사항</h4>
+                            <div class="space-y-3 text-gray-300">
+                                <div class="flex items-center space-x-3"><i class="fas fa-envelope text-purple-400"></i><span>tcp@university.ac.kr</span></div>
+                                <div class="flex items-center space-x-3"><i class="fas fa-phone text-green-400"></i><span>010-1234-5678</span></div>
+                            </div>
+                        </div>
+                        <p class="text-center text-lg font-medium gradient-text mt-8">혁신적인 아이디어로 함께 성장하는 기회에 여러분을 초대합니다! 🚀</p>
+                    </div>
+                </div>
+                <footer class="border-t border-gray-700 pt-6">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                            <button class="flex items-center space-x-2 px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"><i class="fas fa-heart text-pink-400"></i><span>좋아요</span><span class="text-pink-400">24</span></button>
+                            <button id="shareBtn" class="flex items-center space-x-2 px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"><i class="fas fa-share text-blue-400"></i><span>공유</span></button>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm text-gray-400">
+                            <span>태그:</span>
+                            <span class="bg-purple-600 text-white px-2 py-1 rounded text-xs">해커톤</span>
+                            <span class="bg-pink-600 text-white px-2 py-1 rounded text-xs">대회</span>
+                            <span class="bg-green-600 text-white px-2 py-1 rounded text-xs">2025</span>
+                        </div>
+                    </div>
+                </footer>
+            </article>
+            <div class="text-center mt-12">
+                <a href="announcement.html" class="back-button inline-flex items-center px-8 py-4 rounded-lg text-lg font-medium"><i class="fas fa-list mr-3"></i>공지사항 목록 보기</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="bg-black border-t border-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10">
+                            <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                        </div>
+                        <h3 class="orbitron text-lg font-bold gradient-text">TCP</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Team Crazy Performance<br>
+                        컴퓨터공학 동아리
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">임원진</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div><span class="text-blue-300">회장:</span> 김TCP</div>
+                        <div><span class="text-purple-300">부회장:</span> 이Performance</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">연락처</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div class="flex items-center space-x-2"><i class="fas fa-phone text-blue-400"></i><span>010-1234-5678</span></div>
+                        <div class="flex items-center space-x-2"><i class="fas fa-envelope text-purple-400"></i><span>tcp@university.ac.kr</span></div>
+                        <div class="flex items-center space-x-2"><i class="fab fa-instagram text-pink-400"></i><a href="#" class="hover:text-pink-300 transition-colors">@tcp_official</a></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">법적 정보</h4>
+                    <div class="space-y-2 text-sm">
+                        <div><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">이용약관</a></div>
+                        <div><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">개인정보처리방침</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-400">© 2024 TCP (Team Crazy Performance). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {anchor.addEventListener('click', function(e){e.preventDefault();const target=document.querySelector(this.getAttribute('href'));if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}});});
+        const observerOptions={threshold:0.1,rootMargin:'0px 0px -50px 0px'};
+        const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('visible');});},observerOptions);
+        document.querySelectorAll('.scroll-fade').forEach(el=>observer.observe(el));
+        window.addEventListener('scroll',()=>{const header=document.querySelector('header');header.style.backgroundColor=window.scrollY>50?'rgba(0,0,0,0.95)':'rgba(0,0,0,0.9)';});
+        window.addEventListener('load',()=>{setTimeout(()=>document.querySelectorAll('.scroll-fade').forEach(el=>el.classList.add('visible')),300);});
+    </script>
+
+    <!-- 공유 모달 (dark theme) -->
+    <div id="shareModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+        <div class="bg-gray-900 text-white rounded-xl overflow-hidden w-80 shadow-2xl border border-gray-800">
+            <div class="px-4 py-3 border-b border-gray-800">
+                <h2 id="shareModalTitle" class="text-lg font-semibold">공유하기</h2>
+            </div>
+            <div class="p-4 space-y-2">
+                <button id="copyUrlBtn" class="w-full inline-flex items-center justify-start space-x-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-link text-gray-300"></i><span>URL 복사</span>
+                </button>
+                <button id="shareKakaoBtn" class="w-full inline-flex items-center justify-start space-x-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-comment" style="color:#FEE500"></i><span>카카오톡</span>
+                </button>
+                <button id="shareInstaBtn" class="w-full inline-flex items-center justify-start space-x-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fab fa-instagram text-pink-400"></i><span>Instagram</span>
+                </button>
+                <button id="shareFbBtn" class="w-full inline-flex items-center justify-start space-x-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fab fa-facebook text-blue-600"></i><span>Facebook</span>
+                </button>
+                <button id="shareTwBtn" class="w-full inline-flex items-center justify-start space-x-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fab fa-twitter text-blue-400"></i><span>Twitter</span>
+                </button>
+            </div>
+            <div class="px-4 py-3 border-t border-gray-800 text-right">
+                <button id="closeModalBtn" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition">닫기</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // 공유 모달 제어 & 공유 동작 (dark theme)
+        (function () {
+            const shareBtn = document.getElementById('shareBtn');
+            const shareModal = document.getElementById('shareModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const copyUrlBtn = document.getElementById('copyUrlBtn');
+            const shareFbBtn = document.getElementById('shareFbBtn');
+            const shareTwBtn = document.getElementById('shareTwBtn');
+            const shareKakaoBtn = document.getElementById('shareKakaoBtn');
+            const shareInstaBtn = document.getElementById('shareInstaBtn');
+
+            const url = window.location.href;
+            const title = document.title;
+
+            function openModal() {
+                shareModal.classList.remove('hidden');
+            }
+            function closeModal() {
+                shareModal.classList.add('hidden');
+            }
+
+            if (shareBtn && shareModal) shareBtn.addEventListener('click', openModal);
+            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+            if (shareModal) {
+                shareModal.addEventListener('click', (e) => {
+                    if (e.target === shareModal) closeModal();
+                });
+            }
+
+            // URL 복사
+            if (copyUrlBtn) {
+                copyUrlBtn.addEventListener('click', () => {
+                    const toCopy = url;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(toCopy).then(() => {
+                            copyUrlBtn.innerText = '복사됨!';
+                            setTimeout(() => (copyUrlBtn.innerText = 'URL 복사'), 1800);
+                        });
+                    } else {
+                        const ta = document.createElement('textarea');
+                        ta.value = toCopy;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        try { document.execCommand('copy'); } catch (e) {}
+                        document.body.removeChild(ta);
+                        copyUrlBtn.innerText = '복사됨!';
+                        setTimeout(() => (copyUrlBtn.innerText = 'URL 복사'), 1800);
+                    }
+                });
+            }
+
+            // Facebook 공유
+            if (shareFbBtn) {
+                shareFbBtn.addEventListener('click', () => {
+                    const u = encodeURIComponent(url);
+                    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${u}`;
+                    window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+                });
+            }
+
+            // Twitter(X) 공유
+            if (shareTwBtn) {
+                shareTwBtn.addEventListener('click', () => {
+                    const u = encodeURIComponent(url);
+                    const t = encodeURIComponent(title);
+                    const shareUrl = `https://twitter.com/intent/tweet?url=${u}&text=${t}`;
+                    window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
+                });
+            }
+
+            // 카카오톡/인스타그램 안내 (SDK/앱 공유 필요)
+            if (shareKakaoBtn) {
+                shareKakaoBtn.addEventListener('click', async () => {
+                    // 우선 Web Share API가 가능하면 기본 공유 시도
+                    if (navigator.share) {
+                        try { await navigator.share({ title, url }); return; } catch(e) {}
+                    }
+                    alert('카카오톡 공유는 카카오 SDK 연동이 필요합니다. 원하시면 연동해드릴게요.');
+                });
+            }
+            if (shareInstaBtn) {
+                shareInstaBtn.addEventListener('click', async () => {
+                    if (navigator.share) {
+                        try { await navigator.share({ title, url }); return; } catch(e) {}
+                    }
+                    alert('Instagram은 웹 링크 공유 인터페이스가 제한적입니다. Web Share API 또는 앱 내 공유를 사용하세요.');
+                });
+            }
+        })();
+    </script>
+
+</body>
+</html>

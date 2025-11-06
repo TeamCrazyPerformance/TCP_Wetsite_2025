@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - Team Crazy Performance | Members</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 197, 230, 0.3);
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .member-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .member-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .member-card .img-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid transparent;
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            background-image: linear-gradient(var(--secondary-gray), var(--secondary-gray)), linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            margin-bottom: 1rem;
+        }
+
+        .member-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .promo-placeholder {
+            background: linear-gradient(135deg, var(--light-gray), var(--secondary-gray));
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tag-btn {
+            transition: all 0.3s ease;
+        }
+
+        .tag-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .tag-btn.active {
+            ring: 2px;
+            ring-color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo and Title -->
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10">
+                        <img src="logo.svg" alt="TCP " class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h1 class="orbitron text-xl font-bold gradient-text">TCP</h1>
+                        <p class="text-xs text-gray-400">Team Crazy Performance</p>
+                    </div>
+                </a>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="about.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">About</a>
+                    <a href="members.html" class="nav-link orbitron text-sm font-medium text-white">Members</a>
+                    <a href="recruitment.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Recruitment</a>
+                    <a href="announcement.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Announcement</a>
+                    <a href="study.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Study</a>
+                    <a href="team.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Find Your Team</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                    <div class="flex items-center space-x-2">
+                        <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                        <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                    </div>
+                    <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                </div>
+                
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-white"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="pt-24 pb-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <div class="mb-8">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-green-400 flex items-center justify-center">
+                        <i class="fas fa-users text-white text-3xl"></i>
+                    </div>
+                    <h1 class="orbitron text-5xl md:text-7xl font-black mb-4">
+                        <span class="gradient-text">TCP Members</span>
+                    </h1>
+                    <p class="orbitron text-xl md:text-2xl text-gray-300 mb-6">Team Crazy Performance</p>
+                    <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                        <span class="orbitron">TCP</span> 팀의 멤버들을 만나보세요. 검색과 필터로 원하는 멤버를 찾아보세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search and Filter Section -->
+    <section class="py-8 bg-gradient-to-b from-transparent to-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="mb-10 p-6 bg-gray-900 rounded-xl border border-gray-800">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="search" class="orbitron block text-sm font-medium text-gray-300 mb-2">Search</label>
+                        <div class="relative">
+                            <input type="text" id="search" placeholder="이름 또는 기술 스택으로 검색" class="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-4 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="filter-role" class="orbitron block text-sm font-medium text-gray-300 mb-2">Role</label>
+                        <select id="filter-role" class="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-4 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">모든 역할</option>
+                            <option value="팀장">팀장</option>
+                            <option value="프론트엔드">프론트엔드</option>
+                            <option value="백엔드">백엔드</option>
+                            <option value="모바일">모바일</option>
+                            <option value="AI">AI</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <label class="orbitron block text-sm font-medium text-gray-300 mb-2">Technology Tags</label>
+                    <div id="tag-cloud" class="flex flex-wrap gap-2">
+                        <button class="tag-btn px-3 py-1 bg-blue-900 text-blue-300 rounded-full text-xs hover:bg-blue-800 transition-colors">React</button>
+                        <button class="tag-btn px-3 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs hover:bg-yellow-800 transition-colors">JavaScript</button>
+                        <button class="tag-btn px-3 py-1 bg-green-900 text-green-300 rounded-full text-xs hover:bg-green-800 transition-colors">Node.js</button>
+                        <button class="tag-btn px-3 py-1 bg-purple-900 text-purple-300 rounded-full text-xs hover:bg-purple-800 transition-colors">Python</button>
+                        <button class="tag-btn px-3 py-1 bg-pink-900 text-pink-300 rounded-full text-xs hover:bg-pink-800 transition-colors">Swift</button>
+                        <button class="tag-btn px-3 py-1 bg-red-900 text-red-300 rounded-full text-xs hover:bg-red-800 transition-colors">Java</button>
+                        <button class="tag-btn px-3 py-1 bg-indigo-900 text-indigo-300 rounded-full text-xs hover:bg-indigo-800 transition-colors">Flutter</button>
+                        <button class="tag-btn px-3 py-1 bg-teal-900 text-teal-300 rounded-full text-xs hover:bg-teal-800 transition-colors">Vue.js</button>
+                        <button class="tag-btn px-3 py-1 bg-orange-900 text-orange-300 rounded-full text-xs hover:bg-orange-800 transition-colors">AI/ML</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="current-members" class="py-16 bg-gradient-to-b from-transparent to-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4">현재 멤버</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    <span class="orbitron">TCP</span> 팀의 현재 활동 중인 멤버들입니다.
+                </p>
+            </div>
+            
+            <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="김민준" data-tags="React,JavaScript,Node.js,프론트엔드" data-role="팀장">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/A8C5E6/FFFFFF?text=Member1" alt="김민준 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">김민준</h3>
+                    <p class="text-blue-300 mb-2">팀장</p>
+                    <p class="text-sm text-gray-400">프론트엔드 개발 전문가</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded-full text-xs">React</span>
+                        <span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs">JavaScript</span>
+                        <span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">Node.js</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/kimminjun" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://portfolio.kimminjun.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="이서연" data-tags="Python,AI/ML,Django,백엔드" data-role="AI">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/C5A8E6/FFFFFF?text=Member2" alt="이서연 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">이서연</h3>
+                    <p class="text-purple-300 mb-2">AI 개발자</p>
+                    <p class="text-sm text-gray-400">머신러닝과 백엔드 개발</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-purple-900 text-purple-300 rounded-full text-xs">Python</span>
+                        <span class="px-2 py-1 bg-orange-900 text-orange-300 rounded-full text-xs">AI/ML</span>
+                        <span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">Django</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/leeseoyeon" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://portfolio.leeseoyeon.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="박지훈" data-tags="Java,Spring,MySQL,백엔드" data-role="백엔드">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/A8E6C5/FFFFFF?text=Member3" alt="박지훈 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">박지훈</h3>
+                    <p class="text-green-300 mb-2">백엔드 개발자</p>
+                    <p class="text-sm text-gray-400">서버 개발 및 데이터베이스 설계</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-red-900 text-red-300 rounded-full text-xs">Java</span>
+                        <span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">Spring</span>
+                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded-full text-xs">MySQL</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/parkjihun" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://portfolio.parkjihun.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="최예원" data-tags="Swift,Flutter,Kotlin,모바일" data-role="모바일">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/E6A8C5/FFFFFF?text=Member4" alt="최예원 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">최예원</h3>
+                    <p class="text-pink-300 mb-2">모바일 개발자</p>
+                    <p class="text-sm text-gray-400">iOS/Android 앱 개발</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-pink-900 text-pink-300 rounded-full text-xs">Swift</span>
+                        <span class="px-2 py-1 bg-indigo-900 text-indigo-300 rounded-full text-xs">Flutter</span>
+                        <span class="px-2 py-1 bg-orange-900 text-orange-300 rounded-full text-xs">Kotlin</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/choiyewon" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://portfolio.choiyewon.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="정수현" data-tags="Vue.js,JavaScript,CSS,프론트엔드" data-role="프론트엔드">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/A8C5E6/FFFFFF?text=Member5" alt="정수현 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">정수현</h3>
+                    <p class="text-blue-300 mb-2">프론트엔드 개발자</p>
+                    <p class="text-sm text-gray-400">UI/UX 설계 및 웹 개발</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-teal-900 text-teal-300 rounded-full text-xs">Vue.js</span>
+                        <span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs">JavaScript</span>
+                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded-full text-xs">CSS</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/jeongsuhyun" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://portfolio.jeongsuhyun.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="한동민" data-tags="Python,TensorFlow,PyTorch,AI/ML" data-role="AI">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/C5A8E6/FFFFFF?text=Member6" alt="한동민 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">한동민</h3>
+                    <p class="text-purple-300 mb-2">AI 연구원</p>
+                    <p class="text-sm text-gray-400">딥러닝 모델 개발</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-purple-900 text-purple-300 rounded-full text-xs">Python</span>
+                        <span class="px-2 py-1 bg-orange-900 text-orange-300 rounded-full text-xs">TensorFlow</span>
+                        <span class="px-2 py-1 bg-red-900 text-red-300 rounded-full text-xs">PyTorch</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/handongmin" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://portfolio.handongmin.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="alumni-members" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4">졸업 멤버</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    <span class="orbitron">TCP</span> 팀을 졸업하여 각자의 길을 걸어가고 있는 멤버들입니다.
+                </p>
+            </div>
+            <div id="alumni-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="김명수" data-tags="React,JavaScript,TypeScript,프론트엔드" data-role="프론트엔드">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/D8BFD8/FFFFFF?text=Alumni1" alt="김명수 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">김명수</h3>
+                    <p class="text-gray-400 mb-2">프론트엔드 개발자 | 네이버 근무</p>
+                    <p class="text-sm text-gray-400">현재 네이버에서 근무 중</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded-full text-xs">React</span>
+                        <span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs">JavaScript</span>
+                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded-full text-xs">TypeScript</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/kimmyungsoo" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://link.kimmyungsoo.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="박은지" data-tags="Java,Spring,AWS,백엔드" data-role="백엔드">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/A8D8D8/FFFFFF?text=Alumni2" alt="박은지 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">박은지</h3>
+                    <p class="text-gray-400 mb-2">백엔드 개발자 | 카카오 근무</p>
+                    <p class="text-sm text-gray-400">현재 카카오에서 근무 중</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-red-900 text-red-300 rounded-full text-xs">Java</span>
+                        <span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">Spring</span>
+                        <span class="px-2 py-1 bg-orange-900 text-orange-300 rounded-full text-xs">AWS</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/parkeunji" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://link.parkeunji.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+
+                <div class="scroll-fade member-card p-6 rounded-xl text-center card-hover" data-name="최현우" data-tags="Python,Machine Learning,Data Science,AI" data-role="AI">
+                    <div class="img-container mx-auto">
+                        <img src="https://via.placeholder.com/120/E6C5A8/FFFFFF?text=Alumni3" alt="최현우 Profile">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">최현우</h3>
+                    <p class="text-gray-400 mb-2">AI 연구원 | 삼성전자 근무</p>
+                    <p class="text-sm text-gray-400">현재 삼성전자에서 근무 중</p>
+                    <div class="flex flex-wrap justify-center gap-1 mt-3 mb-4">
+                        <span class="px-2 py-1 bg-purple-900 text-purple-300 rounded-full text-xs">Python</span>
+                        <span class="px-2 py-1 bg-orange-900 text-orange-300 rounded-full text-xs">AI/ML</span>
+                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded-full text-xs">Data Science</span>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <a href="https://github.com/choihyunwoo" target="_blank" class="text-gray-400 hover:text-blue-400"><i class="fab fa-github"></i></a>
+                        <a href="https://link.choihyunwoo.com" target="_blank" class="text-gray-400 hover:text-purple-400"><i class="fas fa-link"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black border-t border-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10">
+                            <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                        </div>
+                        <h3 class="orbitron text-lg font-bold gradient-text">TCP</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Team Crazy Performance<br>
+                        컴퓨터공학 동아리
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">임원진</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div><span class="text-blue-300">회장:</span> 김TCP</div>
+                        <div><span class="text-purple-300">부회장:</span> 이Performance</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">연락처</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div class="flex items-center space-x-2"><i class="fas fa-phone text-blue-400"></i><span>010-1234-5678</span></div>
+                        <div class="flex items-center space-x-2"><i class="fas fa-envelope text-purple-400"></i><span>tcp@university.ac.kr</span></div>
+                        <div class="flex items-center space-x-2"><i class="fab fa-instagram text-pink-400"></i><a href="#" class="hover:text-pink-300 transition-colors">@tcp_official</a></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">법적 정보</h4>
+                    <div class="space-y-2 text-sm">
+                        <div><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">이용약관</a></div>
+                        <div><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">개인정보처리방침</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-400">© 2024 TCP (Team Crazy Performance). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search');
+            const roleFilter = document.getElementById('filter-role');
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            const membersGrid = document.getElementById('members-grid');
+            const alumniGrid = document.getElementById('alumni-grid');
+            const memberCards = [...membersGrid.querySelectorAll('.member-card'), ...alumniGrid.querySelectorAll('.member-card')];
+
+            let activeTag = '';
+
+            function filterMembers() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const roleValue = roleFilter.value;
+
+                memberCards.forEach(card => {
+                    const name = card.dataset.name.toLowerCase();
+                    const tags = card.dataset.tags.toLowerCase();
+                    const role = card.dataset.role;
+
+                    const searchMatch = name.includes(searchTerm) || tags.includes(searchTerm);
+                    const roleMatch = !roleValue || role === roleValue;
+                    const tagMatch = !activeTag || tags.includes(activeTag.toLowerCase());
+
+                    if (searchMatch && roleMatch && tagMatch) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // Event Listeners for filters
+            searchInput.addEventListener('input', filterMembers);
+            roleFilter.addEventListener('change', filterMembers);
+
+            // Event Listeners for tag buttons
+            tagButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (activeTag === button.textContent) {
+                        // Deselect tag
+                        activeTag = '';
+                        button.classList.remove('ring-2', 'ring-blue-400');
+                    } else {
+                        // Select new tag
+                        tagButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-400'));
+                        activeTag = button.textContent;
+                        button.classList.add('ring-2', 'ring-blue-400');
+                    }
+                    filterMembers();
+                });
+            });
+
+            // Initial filter call
+            filterMembers();
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-fade').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            }
+        });
+    </script>
+</body>
+</html>

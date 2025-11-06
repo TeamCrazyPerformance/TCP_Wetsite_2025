@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - 탈퇴 신청 | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+            --accent-red: #e6a8a8;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-red {
+            background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .warning-card {
+            background: linear-gradient(135deg, rgba(230, 168, 168, 0.1), rgba(255, 107, 107, 0.1));
+            border: 1px solid rgba(230, 168, 168, 0.3);
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        
+        .sidebar-link.active {
+            background-color: rgba(230, 168, 168, 0.2);
+            color: #ff6b6b;
+        }
+        
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        
+        .editable {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            color: #ffffff;
+            width: 100%;
+            font-size: 0.875rem;
+        }
+        
+        .editable:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(168, 197, 230, 0.3);
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: #9ca3af;
+            font-weight: 600;
+            margin: 0 0.5rem;
+            position: relative;
+        }
+        
+        .step.active {
+            background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+            color: #ffffff;
+        }
+        
+        .step.completed {
+            background: linear-gradient(135deg, var(--accent-green), #10b981);
+            color: #ffffff;
+        }
+        
+        .step-connector {
+            width: 3rem;
+            height: 2px;
+            background-color: var(--light-gray);
+        }
+        
+        .step-connector.completed {
+            background: linear-gradient(90deg, var(--accent-green), #10b981);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(168, 197, 230, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(230, 168, 168, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            margin: 1rem 0;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--accent-red);
+        }
+        
+        .warning-list {
+            background: rgba(230, 168, 168, 0.1);
+            border: 1px solid rgba(230, 168, 168, 0.3);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .warning-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .warning-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            color: #fecaca;
+        }
+        
+        .warning-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .warning-list i {
+            color: #ff6b6b;
+            margin-right: 0.75rem;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+        
+        .success-animation {
+            animation: successPulse 2s ease-in-out;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">My Page</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">개인 정보</h3>
+                    <a href="mypage.html" class="sidebar-link">
+                        <i class="fas fa-user"></i><span class="ml-2">프로필 보기/수정</span>
+                    </a>
+                    <a href="mypage_memberpagesetting.html" class="sidebar-link">
+                        <i class="fas fa-eye"></i><span class="ml-2">멤버 페이지 공개 설정</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">활동 관리</h3>
+                    <a href="mypage_study.html" class="sidebar-link">
+                        <i class="fas fa-book"></i><span class="ml-2">참여 스터디 목록</span>
+                    </a>
+                    <a href="mypage_team.html" class="sidebar-link">
+                        <i class="fas fa-users"></i><span class="ml-2">팀 구성 이력</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">계정 관리</h3>
+                    <a href="mypage_settings.html" class="sidebar-link">
+                        <i class="fas fa-cog"></i><span class="ml-2">개인정보 수정</span>
+                    </a>
+                    <a href="mypage_withdraw.html" class="sidebar-link active">
+                        <i class="fas fa-sign-out-alt"></i><span class="ml-2">탈퇴 신청</span>
+                    </a>
+                </div>
+
+                <div class="pt-4 border-t border-gray-700">
+                    <a href="index.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">메인 페이지로</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="text-2xl font-bold text-white hidden md:block">계정 탈퇴</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-4xl">
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step active" id="step-1">1</div>
+                        <div class="step-connector" id="connector-1"></div>
+                        <div class="step" id="step-2">2</div>
+                        <div class="step-connector" id="connector-2"></div>
+                        <div class="step" id="step-3">3</div>
+                    </div>
+
+                    <!-- Step 1: Warning and Information -->
+                    <section id="withdrawal-step-1" class="withdrawal-step">
+                        <div class="widget-card p-8 rounded-xl">
+                            <div class="text-center mb-8">
+                                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full mb-4">
+                                    <i class="fas fa-exclamation-triangle text-3xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-bold gradient-text-red mb-4">계정 탈퇴 안내</h3>
+                                <p class="text-gray-300 text-lg"><span class="orbitron">TCP</span> 계정을 삭제하기 전에 아래 내용을 신중히 검토해주세요.</p>
+                            </div>
+
+                            <div class="warning-card p-6 rounded-xl mb-6">
+                                <h4 class="text-xl font-bold text-red-300 mb-4 flex items-center">
+                                    <i class="fas fa-info-circle mr-3"></i>
+                                    탈퇴 시 삭제되는 정보
+                                </h4>
+                                <div class="warning-list">
+                                    <ul>
+                                        <li>
+                                            <i class="fas fa-user-circle"></i>
+                                            <span><strong>프로필 정보:</strong> 닉네임, 프로필 사진, 자기소개, 기술 스택 등 모든 개인 정보</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-history"></i>
+                                            <span><strong>활동 기록:</strong> 참여한 스터디, 팀 프로젝트, 대회 참가 이력 등 모든 활동 데이터</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-comments"></i>
+                                            <span><strong>커뮤니케이션:</strong> 작성한 게시글, 댓글, 메시지 등 모든 소통 기록</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-trophy"></i>
+                                            <span><strong>성과 기록:</strong> 획득한 배지, 포인트, 랭킹 등 모든 성취 데이터</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="warning-card p-6 rounded-xl mb-8">
+                                <h4 class="text-xl font-bold text-red-300 mb-4 flex items-center">
+                                    <i class="fas fa-ban mr-3"></i>
+                                    탈퇴 후 제한 사항
+                                </h4>
+                                <div class="warning-list">
+                                    <ul>
+                                        <li>
+                                            <i class="fas fa-clock"></i>
+                                            <span><strong>재가입 제한:</strong> 탈퇴 후 30일간 동일한 이메일로 재가입이 불가능합니다</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-database"></i>
+                                            <span><strong>데이터 복구 불가:</strong> 삭제된 모든 데이터는 복구할 수 없으며, 백업도 제공되지 않습니다</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-users"></i>
+                                            <span><strong>팀 활동 중단:</strong> 현재 참여 중인 모든 팀 활동에서 자동으로 제외됩니다</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-link"></i>
+                                            <span><strong>외부 연동 해제:</strong> GitHub, 포트폴리오 등 연동된 모든 외부 서비스 연결이 해제됩니다</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <a href="mypage.html" class="btn-secondary">
+                                    <i class="fas fa-arrow-left mr-2"></i>
+                                    마이페이지로 돌아가기
+                                </a>
+                                <button onclick="nextStep(2)" class="btn-danger">
+                                    위 내용을 확인했으며, 탈퇴를 진행하겠습니다
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Step 2: Password Verification -->
+                    <section id="withdrawal-step-2" class="withdrawal-step hidden">
+                        <div class="widget-card p-8 rounded-xl">
+                            <div class="text-center mb-8">
+                                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+                                    <i class="fas fa-shield-alt text-3xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-bold gradient-text mb-4">본인 확인</h3>
+                                <p class="text-gray-300 text-lg">계정 보안을 위해 비밀번호를 다시 입력해주세요.</p>
+                            </div>
+
+                            <div class="max-w-md mx-auto">
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-300 mb-3">
+                                        <i class="fas fa-lock mr-2"></i>
+                                        현재 비밀번호
+                                    </label>
+                                    <input type="password" id="password-verification" class="editable" placeholder="현재 사용 중인 비밀번호를 입력하세요">
+                                    <div id="password-error" class="text-red-400 text-sm mt-2 hidden">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        비밀번호가 일치하지 않습니다.
+                                    </div>
+                                </div>
+
+                                <div class="bg-yellow-900 bg-opacity-30 border border-yellow-500 border-opacity-50 rounded-lg p-4 mb-6">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-info-circle text-yellow-400 mt-1 mr-3"></i>
+                                        <div class="text-yellow-200 text-sm">
+                                            <p class="font-semibold mb-1">보안 안내</p>
+                                            <p>본인 확인을 위해 현재 계정의 비밀번호를 정확히 입력해주세요. 여러 번 실패 시 보안을 위해 일시적으로 접근이 제한될 수 있습니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <button onclick="prevStep(1)" class="btn-secondary">
+                                    <i class="fas fa-arrow-left mr-2"></i>
+                                    이전 단계
+                                </button>
+                                <button onclick="verifyPassword()" class="btn-primary">
+                                    비밀번호 확인
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Step 3: Final Confirmation -->
+                    <section id="withdrawal-step-3" class="withdrawal-step hidden">
+                        <div class="widget-card p-8 rounded-xl">
+                            <div class="text-center mb-8">
+                                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full mb-4">
+                                    <i class="fas fa-check-circle text-3xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-bold gradient-text-red mb-4">최종 확인</h3>
+                                <p class="text-gray-300 text-lg">아래 내용을 확인하고 최종 탈퇴 신청을 완료해주세요.</p>
+                            </div>
+
+                            <div class="max-w-2xl mx-auto">
+                                <div class="bg-gray-900 border border-gray-700 rounded-xl p-6 mb-6">
+                                    <h4 class="text-lg font-bold text-white mb-4 flex items-center">
+                                        <i class="fas fa-user mr-3 text-blue-400"></i>
+                                        탈퇴 계정 정보
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-400">닉네임:</span>
+                                            <span class="text-white ml-2 font-medium">Admin Kim</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-400">이메일:</span>
+                                            <span class="text-white ml-2 font-medium">kimtcp@seoultech.ac.kr</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-400">가입일:</span>
+                                            <span class="text-white ml-2 font-medium">2022년 3월 15일</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-400">활동 기간:</span>
+                                            <span class="text-white ml-2 font-medium">2년 3개월</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4 mb-8">
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="confirm-data-loss" required>
+                                        <label for="confirm-data-loss" class="text-gray-300">
+                                            모든 개인 데이터(프로필, 활동 기록, 작성 글 등)가 영구적으로 삭제되며, 복구가 불가능함을 이해했습니다.
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="confirm-reregister-limit" required>
+                                        <label for="confirm-reregister-limit" class="text-gray-300">
+                                            탈퇴 후 30일간 동일한 이메일로 재가입이 불가능함을 이해했습니다.
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="confirm-team-exit" required>
+                                        <label for="confirm-team-exit" class="text-gray-300">
+                                            현재 참여 중인 모든 팀 활동에서 자동으로 제외되며, 이로 인한 팀원들의 불편함을 이해했습니다.
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="confirm-final" required>
+                                        <label for="confirm-final" class="text-gray-300 font-semibold">
+                                            위의 모든 내용을 숙지했으며, <span class="text-red-400"><span class="orbitron">TCP</span> 계정을 영구적으로 삭제</span>하는 것에 동의합니다.
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="bg-red-900 bg-opacity-30 border border-red-500 border-opacity-50 rounded-xl p-6 mb-8">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-exclamation-triangle text-red-400 text-xl mt-1 mr-4"></i>
+                                        <div>
+                                            <h5 class="text-red-300 font-bold mb-2">최종 경고</h5>
+                                            <p class="text-red-200 text-sm leading-relaxed">
+                                                이 작업은 되돌릴 수 없습니다. 탈퇴 버튼을 클릭하면 즉시 계정이 삭제되며, 
+                                                모든 데이터가 영구적으로 사라집니다. 정말 탈퇴하시겠습니까?
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <button onclick="prevStep(2)" class="btn-secondary">
+                                    <i class="fas fa-arrow-left mr-2"></i>
+                                    이전 단계
+                                </button>
+                                <button onclick="finalWithdraw()" id="final-withdraw-btn" class="btn-danger opacity-50 cursor-not-allowed" disabled>
+                                    <i class="fas fa-trash-alt mr-2"></i>
+                                    계정 영구 삭제
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Success Message -->
+                    <section id="withdrawal-success" class="withdrawal-step hidden">
+                        <div class="widget-card p-8 rounded-xl text-center success-animation">
+                            <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-full mb-6">
+                                <i class="fas fa-check text-4xl text-white"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold text-green-400 mb-4">탈퇴가 완료되었습니다</h3>
+                            <p class="text-gray-300 text-lg mb-8">
+                                김TCP님의 <span class="orbitron">TCP</span> 홈페이지 계정이 성공적으로 삭제되었습니다.<br>
+                                그동안 <span class="orbitron">TCP</span>와 함께해 주셔서 감사했습니다.
+                            </p>
+                            
+                            <div class="bg-green-900 bg-opacity-30 border border-green-500 border-opacity-50 rounded-xl p-6 mb-8 max-w-md mx-auto">
+                                <h4 class="text-green-300 font-bold mb-3">처리 완료된 작업</h4>
+                                <ul class="text-green-200 text-sm space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        계정 및 프로필 데이터 삭제
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        활동 기록 및 게시글 삭제
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        팀 활동에서 자동 제외
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        외부 서비스 연동 해제
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <p class="text-sm text-gray-400 mb-8">
+                                5초 후 자동으로 메인 페이지로 이동합니다...
+                            </p>
+
+                            <button onclick="goToHome()" class="btn-primary">
+                                <i class="fas fa-home mr-2"></i>
+                                메인 페이지로 이동
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        function nextStep(step) {
+            // Hide current step
+            document.getElementById(`withdrawal-step-${currentStep}`).classList.add('hidden');
+            
+            // Show next step
+            document.getElementById(`withdrawal-step-${step}`).classList.remove('hidden');
+            
+            // Update step indicators
+            document.getElementById(`step-${currentStep}`).classList.remove('active');
+            document.getElementById(`step-${currentStep}`).classList.add('completed');
+            document.getElementById(`connector-${currentStep}`).classList.add('completed');
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            currentStep = step;
+        }
+
+        function prevStep(step) {
+            // Hide current step
+            document.getElementById(`withdrawal-step-${currentStep}`).classList.add('hidden');
+            
+            // Show previous step
+            document.getElementById(`withdrawal-step-${step}`).classList.remove('hidden');
+            
+            // Update step indicators
+            document.getElementById(`step-${currentStep}`).classList.remove('active');
+            document.getElementById(`step-${step}`).classList.remove('completed');
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            if (step < currentStep) {
+                document.getElementById(`connector-${step}`).classList.remove('completed');
+            }
+            
+            currentStep = step;
+        }
+
+        function verifyPassword() {
+            const password = document.getElementById('password-verification').value;
+            const errorDiv = document.getElementById('password-error');
+            
+            if (!password) {
+                errorDiv.textContent = '비밀번호를 입력해주세요.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Simulate password verification (in real app, this would be an API call)
+            if (password === 'wrongpassword') {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i>비밀번호가 일치하지 않습니다.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Password verified, proceed to next step
+            errorDiv.classList.add('hidden');
+            nextStep(3);
+        }
+
+        // Check all checkboxes to enable final withdraw button
+        function checkAllConfirmations() {
+            const checkboxes = [
+                'confirm-data-loss',
+                'confirm-reregister-limit', 
+                'confirm-team-exit',
+                'confirm-final'
+            ];
+            
+            const allChecked = checkboxes.every(id => document.getElementById(id).checked);
+            const finalBtn = document.getElementById('final-withdraw-btn');
+            
+            if (allChecked) {
+                finalBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                finalBtn.disabled = false;
+            } else {
+                finalBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                finalBtn.disabled = true;
+            }
+        }
+
+        // Add event listeners to checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', checkAllConfirmations);
+            });
+        });
+
+        function finalWithdraw() {
+            // Show loading state
+            const btn = document.getElementById('final-withdraw-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>처리 중...';
+            btn.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Hide current step and show success
+                document.getElementById('withdrawal-step-3').classList.add('hidden');
+                document.getElementById('withdrawal-success').classList.remove('hidden');
+                
+                // Update step indicator
+                document.getElementById('step-3').classList.remove('active');
+                document.getElementById('step-3').classList.add('completed');
+                document.getElementById('connector-2').classList.add('completed');
+                
+                // Auto redirect after 5 seconds
+                setTimeout(() => {
+                    goToHome();
+                }, 5000);
+                
+            }, 2000);
+        }
+
+        function goToHome() {
+            // In a real application, this would redirect to the actual home page
+            // For demo purposes, we'll show an alert
+            alert('실제 구현에서는 메인 페이지(index.html)로 리디렉션됩니다.');
+            window.location.href = 'index.html';
+        }
+
+        // Handle Enter key in password field
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordField = document.getElementById('password-verification');
+            if (passwordField) {
+                passwordField.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        verifyPassword();
+                    }
+                });
+            }
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

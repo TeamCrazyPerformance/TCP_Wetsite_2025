@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - 공지사항 작성</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .form-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-input {
+            background-color: var(--light-gray);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(168, 197, 230, 0.1);
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 197, 230, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--secondary-gray);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .preview-modal {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .char-counter {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+        
+        .char-counter.warning {
+            color: var(--accent-pink);
+        }
+        
+        .toolbar-btn {
+            padding: 0.5rem;
+            background: var(--light-gray);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+        }
+        
+        .toolbar-btn:hover {
+            background: var(--accent-blue);
+            color: var(--primary-black);
+        }
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo and Title -->
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10">
+                        <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h1 class="orbitron text-xl font-bold gradient-text">TCP</h1>
+                        <p class="text-xs text-gray-400">Team Crazy Performance</p>
+                    </div>
+                </a>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="about.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">About</a>
+                    <a href="members.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Members</a>
+                    <a href="recruitment.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Recruitment</a>
+                    <a href="announcement.html" class="nav-link orbitron text-sm font-medium text-white">Announcement</a>
+                    <a href="study.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Study</a>
+                    <a href="team.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Find Your Team</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                    <div class="flex items-center space-x-2">
+                        <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                        <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                    </div>
+                    <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                </div>
+                
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-white"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20 pb-16 min-h-screen">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <!-- 페이지 헤더 -->
+            <div class="mb-8">
+                <a href="announcement.html" class="btn-secondary inline-flex items-center px-6 py-3 rounded-lg text-sm font-medium text-white">
+                    <i class="fas fa-arrow-left mr-2"></i>공지사항 목록으로 돌아가기
+                </a>
+            </div>
+
+            <div class="text-center mb-12">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 via-pink-400 to-red-400 flex items-center justify-center">
+                    <i class="fas fa-edit text-white text-xl"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold gradient-text mb-2">공지사항 작성</h1>
+                <p class="text-gray-400"><span class="orbitron">TCP</span> 동아리 회원들에게 전달할 중요한 소식을 작성해주세요.</p>
+            </div>
+
+            <!-- 작성 폼 -->
+            <form id="announcementForm" class="form-card rounded-xl p-8">
+                <!-- 제목 입력 -->
+                <div class="mb-8">
+                    <label for="title" class="block text-lg font-semibold mb-3 text-white">
+                        <i class="fas fa-heading text-blue-400 mr-2"></i>제목
+                    </label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        class="form-input w-full px-4 py-3 rounded-lg text-lg" 
+                        placeholder="공지사항 제목을 입력해주세요..."
+                        maxlength="100"
+                        required
+                    >
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-sm text-gray-400">명확하고 간결한 제목을 작성해주세요.</p>
+                        <span id="titleCounter" class="char-counter">0/100</span>
+                    </div>
+                </div>
+                
+                <!-- 한줄요약 입력 -->
+                <div class="mb-8">
+                    <label for="summary" class="block text-lg font-semibold mb-3 text-white">
+                        <i class="fas fa-quote-left text-green-300 mr-2"></i>한줄요약
+                    </label>
+                    <input
+                        type="text"
+                        id="summary"
+                        name="summary"
+                        class="form-input w-full px-4 py-3 rounded-lg"
+                        placeholder="목록에 노출될 요약을 한 줄로 입력하세요 (예: 핵심 안내/변경점)."
+                        maxlength="150"
+                        required
+                    >
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-sm text-gray-400">150자 이내 권장, 목록/검색 영역에 사용됩니다.</p>
+                        <span id="summaryCounter" class="char-counter">0/150</span>
+                    </div>
+                </div>
+
+                <!-- 날짜 설정 -->
+                <div class="mb-8">
+                    <label for="date" class="block text-lg font-semibold mb-3 text-white">
+                        <i class="fas fa-calendar text-green-400 mr-2"></i>게시일
+                    </label>
+                    <input 
+                        type="date" 
+                        id="date" 
+                        name="date" 
+                        class="form-input px-4 py-3 rounded-lg"
+                        required
+                    >
+                    <p class="text-sm text-gray-400 mt-2">공지사항이 게시될 날짜를 선택해주세요.</p>
+                </div>
+
+                <!-- 내용 작성 -->
+                <div class="mb-8">
+                    <label for="content" class="block text-lg font-semibold mb-3 text-white">
+                        <i class="fas fa-align-left text-pink-400 mr-2"></i>내용
+                    </label>
+                    
+                    <!-- 텍스트 서식 도구바 -->
+                    <div class="flex flex-wrap gap-2 mb-3 p-3 bg-gray-800 rounded-lg">
+                        <button type="button" class="toolbar-btn" onclick="formatText('bold')" title="굵게">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" class="toolbar-btn" onclick="formatText('italic')" title="기울임">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button type="button" class="toolbar-btn" onclick="formatText('underline')" title="밑줄">
+                            <i class="fas fa-underline"></i>
+                        </button>
+                        <div class="border-l border-gray-600 mx-2"></div>
+                        <button type="button" class="toolbar-btn" onclick="insertText('• ')" title="불릿 포인트">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                        <button type="button" class="toolbar-btn" onclick="insertText('1. ')" title="번호 목록">
+                            <i class="fas fa-list-ol"></i>
+                        </button>
+                        <div class="border-l border-gray-600 mx-2"></div>
+                        <button type="button" class="toolbar-btn" onclick="insertText('📌 ')" title="핀 이모지">
+                            📌
+                        </button>
+                        <button type="button" class="toolbar-btn" onclick="insertText('⚠️ ')" title="경고 이모지">
+                            ⚠️
+                        </button>
+                        <button type="button" class="toolbar-btn" onclick="insertText('🎉 ')" title="축하 이모지">
+                            🎉
+                        </button>
+                    </div>
+                    
+                    <textarea 
+                        id="content" 
+                        name="content" 
+                        class="form-input w-full px-4 py-4 rounded-lg resize-none" 
+                        rows="15"
+                        placeholder="공지사항 내용을 상세히 작성해주세요...
+
+예시 구조:
+- 인사말
+- 주요 내용
+- 세부 사항
+- 문의처
+- 마무리 인사"
+                        maxlength="3000"
+                        required
+                    ></textarea>
+                    
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-sm text-gray-400">마크다운 문법을 지원합니다. (**, *, _, 등)</p>
+                        <span id="contentCounter" class="char-counter">0/3000</span>
+                    </div>
+                </div>
+
+                <!-- 작성자 정보 -->
+                <div class="mb-8">
+                    <label for="author" class="block text-lg font-semibold mb-3 text-white">
+                        <i class="fas fa-user text-yellow-400 mr-2"></i>작성자
+                    </label>
+                    <input 
+                        type="text" 
+                        id="author" 
+                        name="author" 
+                        class="form-input px-4 py-3 rounded-lg" 
+                        value="관리자"
+                        readonly
+                    >
+                </div>
+
+                <!-- 버튼 그룹 -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                    <button 
+                        type="button" 
+                        id="previewBtn"
+                        class="btn-secondary px-8 py-3 rounded-lg font-medium text-white flex items-center justify-center"
+                    >
+                        <i class="fas fa-eye mr-2"></i>미리보기
+                    </button>
+                    
+                    <button 
+                        type="button" 
+                        id="saveDraftBtn"
+                        class="btn-secondary px-8 py-3 rounded-lg font-medium text-white flex items-center justify-center"
+                    >
+                        <i class="fas fa-save mr-2"></i>임시저장
+                    </button>
+                    
+                    <button 
+                        type="submit" 
+                        class="btn-primary px-8 py-3 rounded-lg font-bold text-white flex items-center justify-center"
+                    >
+                        <i class="fas fa-paper-plane mr-2"></i>게시하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 미리보기 모달 -->
+    <div id="previewModal" class="fixed inset-0 preview-modal flex items-center justify-center hidden z-50">
+        <div class="bg-gray-900 rounded-xl max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="sticky top-0 bg-gray-900 px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                <h2 class="text-xl font-bold gradient-text">미리보기</h2>
+                <button id="closePreview" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <article id="previewContent">
+                    <!-- 미리보기 내용이 여기에 표시됩니다 -->
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- 성공 메시지 모달 -->
+    <div id="successModal" class="fixed inset-0 preview-modal flex items-center justify-center hidden z-50">
+        <div class="bg-gray-900 rounded-xl p-8 mx-4 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-blue-400 flex items-center justify-center">
+                <i class="fas fa-check text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold gradient-text mb-2">게시 완료!</h3>
+            <p class="text-gray-300 mb-6">공지사항이 성공적으로 게시되었습니다.</p>
+            <button id="goToAnnouncements" class="btn-primary px-6 py-2 rounded-lg font-medium text-white">
+                공지사항 목록 보기
+            </button>
+        </div>
+    </div>
+
+    <footer class="bg-black border-t border-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10">
+                            <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                        </div>
+                        <h3 class="orbitron text-lg font-bold gradient-text">TCP</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Team Crazy Performance<br>
+                        컴퓨터공학 동아리
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">임원진</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div><span class="text-blue-300">회장:</span> 김TCP</div>
+                        <div><span class="text-purple-300">부회장:</span> 이Performance</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">연락처</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div class="flex items-center space-x-2"><i class="fas fa-phone text-blue-400"></i><span>010-1234-5678</span></div>
+                        <div class="flex items-center space-x-2"><i class="fas fa-envelope text-purple-400"></i><span>tcp@university.ac.kr</span></div>
+                        <div class="flex items-center space-x-2"><i class="fab fa-instagram text-pink-400"></i><a href="#" class="hover:text-pink-300 transition-colors">@tcp_official</a></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">법적 정보</h4>
+                    <div class="space-y-2 text-sm">
+                        <div><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">이용약관</a></div>
+                        <div><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">개인정보처리방침</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-400">© 2024 TCP (Team Crazy Performance). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 페이지 로드시 초기 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            // 오늘 날짜로 초기화
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            
+            // 문자 수 카운터 초기화
+            updateCharCounter();
+        });
+
+        // 문자 수 카운터 업데이트
+        function updateCharCounter() {
+            const titleInput = document.getElementById('title');
+            const contentInput = document.getElementById('content');
+            const summaryInput = document.getElementById('summary');
+
+            const titleCounter = document.getElementById('titleCounter');
+            const contentCounter = document.getElementById('contentCounter');
+            const summaryCounter = document.getElementById('summaryCounter');
+
+            if (titleInput && titleCounter) {
+                titleCounter.textContent = `${titleInput.value.length}/100`;
+                titleInput.addEventListener('input', function () {
+                const count = this.value.length;
+                titleCounter.textContent = `${count}/100`;
+                titleCounter.classList.toggle('warning', count > 90);
+                });
+            }
+
+            if (contentInput && contentCounter) {
+                contentCounter.textContent = `${contentInput.value.length}/3000`;
+                contentInput.addEventListener('input', function () {
+                const count = this.value.length;
+                contentCounter.textContent = `${count}/3000`;
+                contentCounter.classList.toggle('warning', count > 2800);
+                });
+            }
+
+            if (summaryInput && summaryCounter) {
+                summaryCounter.textContent = `${summaryInput.value.length}/150`;
+                summaryInput.addEventListener('input', function () {
+                const count = this.value.length;
+                summaryCounter.textContent = `${count}/150`;
+                summaryCounter.classList.toggle('warning', count > 140);
+                });
+            }
+        }
+
+
+
+        // 텍스트 포맷팅 함수
+        function formatText(command) {
+            const textarea = document.getElementById('content');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            let formattedText = '';
+            switch(command) {
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'underline':
+                    formattedText = `_${selectedText}_`;
+                    break;
+            }
+            
+            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+            textarea.focus();
+            textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
+        }
+
+        // 텍스트 삽입 함수
+        function insertText(text) {
+            const textarea = document.getElementById('content');
+            const start = textarea.selectionStart;
+            
+            textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(start);
+            textarea.focus();
+            textarea.setSelectionRange(start + text.length, start + text.length);
+        }
+
+        // 미리보기 기능
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            const title   = document.getElementById('title').value.trim();
+            const summary = document.getElementById('summary').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const date    = document.getElementById('date').value;
+            const author  = document.getElementById('author').value;
+
+            if (!title || !summary || !content) {
+                alert('제목, 한줄요약, 내용을 모두 입력해주세요.');
+                return;
+            }
+
+            const previewHTML = `
+                <header class="mb-8">
+                <h1 class="text-4xl font-bold mt-4 gradient-text">${title}</h1>
+                <p class="text-gray-300 mt-2">${summary}</p>
+                <div class="bg-gray-800 rounded-lg p-4 mt-4 text-sm text-gray-300">
+                    <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-user text-purple-400"></i><span>작성자: ${author}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-calendar text-purple-400"></i><span>${new Date(date).toLocaleDateString('ko-KR')}</span>
+                    </div>
+                    </div>
+                </div>
+                </header>
+                <div class="bg-gray-800 rounded-lg p-8">
+                <div class="text-gray-200 whitespace-pre-wrap">${content}</div>
+                </div>
+            `;
+            document.getElementById('previewContent').innerHTML = previewHTML;
+            document.getElementById('previewModal').classList.remove('hidden');
+        });
+
+
+        // 미리보기 모달 닫기
+        document.getElementById('closePreview').addEventListener('click', function() {
+            document.getElementById('previewModal').classList.add('hidden');
+        });
+
+        // 임시저장 기능
+        document.getElementById('saveDraftBtn').addEventListener('click', function() {
+            const formData = {
+                title: document.getElementById('title').value,
+                summary: document.getElementById('summary').value,
+                content: document.getElementById('content').value,
+                date: document.getElementById('date').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('announcement_draft', JSON.stringify(formData));
+            
+            // 임시저장 알림
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check mr-2"></i>저장완료!';
+            btn.style.background = 'linear-gradient(135deg, var(--accent-green), var(--accent-blue))';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        });
+
+        // 폼 검증 및 제출
+        document.getElementById('announcementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const summary = document.getElementById('summary').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const date = document.getElementById('date').value;
+            
+            // 유효성 검사
+            if (!title) {
+                alert('제목을 입력해주세요.');
+                document.getElementById('title').focus();
+                return;
+            }
+
+            if (!summary) {
+                alert('한줄요약을 입력해주세요.');
+                document.getElementById('summary').focus();
+                return;
+            }
+            
+            if (!content) {
+                alert('내용을 입력해주세요.');
+                document.getElementById('content').focus();
+                return;
+            }
+            
+            if (!date) {
+                alert('게시일을 선택해주세요.');
+                document.getElementById('date').focus();
+                return;
+            }
+            
+            // 제출 처리 (실제로는 서버로 전송)
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>게시 중...';
+            submitBtn.disabled = true;
+            
+            // 시뮬레이션 (실제로는 서버 API 호출)
+            setTimeout(() => {
+                // 임시저장 데이터 삭제
+                localStorage.removeItem('announcement_draft');
+                
+                // 성공 모달 표시
+                document.getElementById('successModal').classList.remove('hidden');
+                
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+
+        // 성공 모달 처리
+        document.getElementById('goToAnnouncements').addEventListener('click', function() {
+            window.location.href = 'announcement.html';
+        });
+
+        // 페이지 떠날 때 확인
+        window.addEventListener('beforeunload', function(e) {
+            const title = document.getElementById('title').value.trim();
+            const summary = document.getElementById('summary').value.trim();
+            const content = document.getElementById('content').value.trim();
+            
+            if (title || summary || content) {
+                e.preventDefault();
+                e.returnValue = '작성 중인 내용이 있습니다. 정말 떠나시겠습니까?';
+            }
+        });
+
+        // 임시저장된 데이터 복원
+        const savedDraft = localStorage.getItem('announcement_draft');
+        if (savedDraft) {
+            const draftData = JSON.parse(savedDraft);
+            
+            if (confirm('임시저장된 글이 있습니다. 불러오시겠습니까?')) {
+                document.getElementById('title').value = draftData.title || '';
+                document.getElementById('summary').value = draftData.summary || '';
+                document.getElementById('content').value = draftData.content || '';
+                document.getElementById('date').value = draftData.date || '';
+                
+                updateCharCounter();
+            }
+        }
+
+        // 헤더 스크롤 효과
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            }
+        });
+    </script>
+</body>
+</html>

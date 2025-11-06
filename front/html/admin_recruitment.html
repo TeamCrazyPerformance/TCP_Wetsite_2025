@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP Admin - Recruitment Page Management | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .progress-bar {
+            background-color: var(--light-gray);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 9999px;
+        }
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(168, 197, 230, 0.2);
+        }
+        .form-label {
+            color: #d1d5db;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(168, 197, 230, 0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            background: rgba(168, 197, 230, 0.1);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--light-gray);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-active {
+            background: linear-gradient(135deg, var(--accent-green), #10b981);
+            color: #000;
+        }
+        .status-inactive {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+        .preview-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .preview-button-active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .preview-button-inactive {
+            background: var(--light-gray);
+            color: #666;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .date-status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .date-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+        .date-status.upcoming {
+            background: rgba(168, 197, 230, 0.2);
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+        }
+        .date-status.expired {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex min-h-screen">
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Dashboard</h3>
+                    <a href="admin.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">Overview</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Page Management</h3>
+                    <a href="admin_main.html" class="sidebar-link"><i class="fas fa-file-alt"></i><span class="ml-2">Main Page</span></a>
+                    <a href="admin_recruitment.html" class="sidebar-link bg-gray-700 text-white"><i class="fas fa-bullhorn"></i><span class="ml-2">Recruitment Page</span></a>
+                    <a href="admin_announcement.html" class="sidebar-link"><i class="fas fa-newspaper"></i><span class="ml-2">Announcement Page</span></a>
+                    <a href="admin_study.html" class="sidebar-link"><i class="fas fa-book"></i><span class="ml-2">Study Group Page</span></a>
+                    <a href="admin_team.html" class="sidebar-link"><i class="fas fa-users"></i><span class="ml-2">Project Team Page</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Management</h3>
+                    <a href="admin_permission.html" class="sidebar-link"><i class="fas fa-user-shield"></i><span class="ml-2">Manage Permissions</span></a>
+                    <a href="admin_deletaccount.html" class="sidebar-link"><i class="fas fa-user-slash"></i><span class="ml-2">Delete Accounts</span></a>
+                    <a href="#" class="sidebar-link"><i class="fas fa-database"></i><span class="ml-2">Modify Information</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Application Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-user-plus"></i><span class="ml-2">New Member Applications</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Web Server Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-server"></i><span class="ml-2">Server Tools</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="orbitron text-2xl font-bold text-white hidden md:block">Recruitment Page Management</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <!-- Current Status Overview -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">현재 모집 상태</h3>
+                            <div class="flex items-center space-x-4">
+                                <div class="status-badge" id="currentStatus">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    모집 활성화
+                                </div>
+                                <button class="btn-primary" onclick="saveAllSettings()">
+                                    <i class="fas fa-save mr-2"></i>
+                                    모든 설정 저장
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Quick Stats -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold mb-4 text-blue-300">지원 현황</h4>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-300">총 지원자</span>
+                                        <span class="text-2xl font-bold gradient-text" id="totalApplicants">47</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-300">이번 주</span>
+                                        <span class="text-xl font-bold text-green-400" id="weeklyApplicants">12</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-300">어제</span>
+                                        <span class="text-lg font-bold text-blue-400" id="dailyApplicants">3</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recruitment Period -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold mb-4 text-purple-300">모집 기간</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <span class="text-gray-300 text-sm">시작일</span>
+                                        <div class="text-lg font-bold text-white" id="displayStartDate">2025-08-01</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-300 text-sm">종료일</span>
+                                        <div class="text-lg font-bold text-white" id="displayEndDate">2025-09-01</div>
+                                    </div>
+                                    <div class="date-status active" id="periodStatus">
+                                        <i class="fas fa-calendar-check mr-2"></i>
+                                        모집 기간 중
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Button Status -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold mb-4 text-green-300">지원 버튼 상태</h4>
+                                <div class="text-center">
+                                    <div class="mb-4">
+                                        <span class="text-gray-300 text-sm">현재 상태</span>
+                                    </div>
+                                    <div id="buttonStatusDisplay" class="status-badge status-active mb-4">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        활성화됨
+                                    </div>
+                                    <div class="text-sm text-gray-400">
+                                        지원자들이 "지금 지원하기" 버튼을 클릭할 수 있습니다
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Settings Control Panel -->
+                    <section class="mb-8">
+                        <h3 class="text-3xl font-bold gradient-text mb-6">설정 제어판</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Application Button Control -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h4 class="text-xl font-bold text-blue-300">지원 버튼 제어</h4>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="applyButtonToggle" checked onchange="toggleApplyButton()">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="p-4 bg-blue-900 bg-opacity-30 rounded-lg">
+                                        <h5 class="font-semibold text-blue-300 mb-2">기능 설명</h5>
+                                        <ul class="text-sm text-gray-300 space-y-1">
+                                            <li>• 토글을 켜면 모집 페이지의 "지금 지원하기" 버튼이 활성화됩니다</li>
+                                            <li>• 토글을 끄면 버튼이 비활성화되어 지원이 불가능해집니다</li>
+                                            <li>• 모집 기간과 별도로 독립적으로 제어 가능합니다</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fas fa-info-circle text-blue-400"></i>
+                                            <span class="text-sm text-gray-300">현재 설정</span>
+                                        </div>
+                                        <div class="pl-6">
+                                            <span class="text-sm" id="buttonToggleStatus">지원 버튼이 활성화되어 있습니다</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recruitment Period Control -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold mb-6 text-purple-300">모집 기간 설정</h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="form-label">모집 시작일</label>
+                                        <input type="date" class="form-input" id="startDate" value="2025-08-01" onchange="updateRecruitmentPeriod()">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="form-label">모집 종료일</label>
+                                        <input type="date" class="form-input" id="endDate" value="2025-09-01" onchange="updateRecruitmentPeriod()">
+                                    </div>
+                                    
+                                    <div class="p-4 bg-purple-900 bg-opacity-30 rounded-lg">
+                                        <h5 class="font-semibold text-purple-300 mb-2">기간 정보</h5>
+                                        <div class="text-sm text-gray-300 space-y-1">
+                                            <div>총 모집 기간: <span id="totalDays" class="font-semibold text-white">31일</span></div>
+                                            <div>남은 기간: <span id="remainingDays" class="font-semibold text-green-400">15일</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Preview Section -->
+                    <section class="mb-8">
+                        <h3 class="text-3xl font-bold gradient-text mb-6">실시간 미리보기</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Button Preview -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold mb-6 text-green-300">지원 버튼 미리보기</h4>
+                                <div class="preview-card">
+                                    <div class="mb-4">
+                                        <h5 class="text-lg font-bold mb-2 text-gray-300">recruitment.html 에서 보이는 모습</h5>
+                                    </div>
+                                    <div id="buttonPreview" class="preview-button-active">
+                                        <i class="fas fa-rocket mr-2"></i>
+                                        지금 지원하기
+                                    </div>
+                                    <div class="mt-4 text-sm text-gray-400" id="buttonPreviewStatus">
+                                        버튼이 활성화되어 있어 사용자가 클릭할 수 있습니다
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Period Display Preview -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold mb-6 text-yellow-300">기간 표시 미리보기</h4>
+                                <div class="preview-card">
+                                    <div class="mb-4">
+                                        <h5 class="text-lg font-bold mb-2 text-gray-300">사용자에게 표시되는 정보</h5>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-sm text-gray-400 mb-2">지원 기간</div>
+                                        <div class="text-lg font-bold text-white mb-1" id="periodPreview">2025년 8월 1일 ~ 2025년 9월 1일</div>
+                                        <div class="date-status active" id="periodPreviewStatus">
+                                            <i class="fas fa-calendar-check mr-2"></i>
+                                            현재 모집중
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Advanced Settings -->
+                    <section class="mb-8">
+                        <h3 class="text-3xl font-bold gradient-text mb-6">고급 설정</h3>
+                        
+                        <div class="widget-card p-6 rounded-xl">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <!-- Automatic Controls -->
+                                <div>
+                                    <h4 class="text-xl font-bold mb-4 text-pink-300">자동 제어</h4>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between p-4 bg-pink-900 bg-opacity-20 rounded-lg">
+                                            <div>
+                                                <div class="font-semibold text-pink-300">기간 만료 시 자동 비활성화</div>
+                                                <div class="text-sm text-gray-400">모집 종료일이 지나면 자동으로 지원 버튼을 비활성화합니다</div>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" id="autoDisableToggle" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between p-4 bg-pink-900 bg-opacity-20 rounded-lg">
+                                            <div>
+                                                <div class="font-semibold text-pink-300">시작일 자동 활성화</div>
+                                                <div class="text-sm text-gray-400">모집 시작일이 되면 자동으로 지원 버튼을 활성화합니다</div>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" id="autoEnableToggle" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bulk Actions -->
+                                <div>
+                                    <h4 class="text-xl font-bold mb-4 text-cyan-300">일괄 작업</h4>
+                                    <div class="space-y-3">
+                                        <button class="btn-success w-full" onclick="enableRecruitment()">
+                                            <i class="fas fa-play mr-2"></i>
+                                            모집 즉시 시작
+                                        </button>
+                                        
+                                        <button class="btn-danger w-full" onclick="disableRecruitment()">
+                                            <i class="fas fa-stop mr-2"></i>
+                                            모집 즉시 중단
+                                        </button>
+                                        
+                                        <button class="btn-secondary w-full" onclick="resetToDefaults()">
+                                            <i class="fas fa-undo mr-2"></i>
+                                            기본값으로 초기화
+                                        </button>
+                                        
+                                        <button class="btn-secondary w-full" onclick="exportSettings()">
+                                            <i class="fas fa-download mr-2"></i>
+                                            설정 내보내기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Application Log -->
+                    <section>
+                        <h3 class="text-3xl font-bold gradient-text mb-6">최근 지원 현황</h3>
+                        
+                        <div class="widget-card p-6 rounded-xl">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-gray-700">
+                                            <th class="text-left p-3 font-semibold text-gray-300">시간</th>
+                                            <th class="text-left p-3 font-semibold text-gray-300">지원자</th>
+                                            <th class="text-left p-3 font-semibold text-gray-300">학과</th>
+                                            <th class="text-left p-3 font-semibold text-gray-300">상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applicationLog">
+                                        <tr class="border-b border-gray-800">
+                                            <td class="p-3 text-gray-400">2025-01-15 14:30</td>
+                                            <td class="p-3 text-white">김개발</td>
+                                            <td class="p-3 text-gray-300">컴퓨터공학과</td>
+                                            <td class="p-3"><span class="status-badge status-active">접수완료</span></td>
+                                        </tr>
+                                        <tr class="border-b border-gray-800">
+                                            <td class="p-3 text-gray-400">2025-01-15 11:20</td>
+                                            <td class="p-3 text-white">이프론트</td>
+                                            <td class="p-3 text-gray-300">전자정보공학과</td>
+                                            <td class="p-3"><span class="status-badge status-active">접수완료</span></td>
+                                        </tr>
+                                        <tr class="border-b border-gray-800">
+                                            <td class="p-3 text-gray-400">2025-01-14 16:45</td>
+                                            <td class="p-3 text-white">박백엔드</td>
+                                            <td class="p-3 text-gray-300">컴퓨터공학과</td>
+                                            <td class="p-3"><span class="status-badge status-active">접수완료</span></td>
+                                        </tr>
+                                        <tr class="border-b border-gray-800">
+                                            <td class="p-3 text-gray-400">2025-01-14 09:15</td>
+                                            <td class="p-3 text-white">최풀스택</td>
+                                            <td class="p-3 text-gray-300">소프트웨어학과</td>
+                                            <td class="p-3"><span class="status-badge status-active">접수완료</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-gray-400">2025-01-13 18:20</td>
+                                            <td class="p-3 text-white">정데이터</td>
+                                            <td class="p-3 text-gray-300">전자공학과</td>
+                                            <td class="p-3"><span class="status-badge status-active">접수완료</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <button class="btn-secondary" onclick="viewAllApplications()">
+                                    <i class="fas fa-list mr-2"></i>
+                                    모든 지원서 보기
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Settings data
+        let settings = {
+            applyButtonEnabled: true,
+            recruitmentPeriod: {
+                start: '2025-08-01',
+                end: '2025-09-01'
+            },
+            autoDisable: true,
+            autoEnable: true
+        };
+
+        // Initialize page
+        function initializePage() {
+            updateAllPreviews();
+            updatePeriodCalculations();
+        }
+
+        // Toggle apply button
+        function toggleApplyButton() {
+            const toggle = document.getElementById('applyButtonToggle');
+            settings.applyButtonEnabled = toggle.checked;
+            updateApplyButtonPreview();
+            updateCurrentStatus();
+            showNotification(settings.applyButtonEnabled ? '지원 버튼이 활성화되었습니다.' : '지원 버튼이 비활성화되었습니다.');
+        }
+
+        // Update recruitment period
+        function updateRecruitmentPeriod() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (startDate && endDate) {
+                if (new Date(startDate) >= new Date(endDate)) {
+                    showNotification('시작일은 종료일보다 빨라야 합니다.', 'error');
+                    return;
+                }
+                
+                settings.recruitmentPeriod.start = startDate;
+                settings.recruitmentPeriod.end = endDate;
+                
+                updatePeriodDisplays();
+                updatePeriodCalculations();
+                updatePeriodPreview();
+                showNotification('모집 기간이 업데이트되었습니다.');
+            }
+        }
+
+        // Update apply button preview
+        function updateApplyButtonPreview() {
+            const buttonPreview = document.getElementById('buttonPreview');
+            const buttonPreviewStatus = document.getElementById('buttonPreviewStatus');
+            const buttonStatusDisplay = document.getElementById('buttonStatusDisplay');
+            const buttonToggleStatus = document.getElementById('buttonToggleStatus');
+            
+            if (settings.applyButtonEnabled) {
+                buttonPreview.className = 'preview-button-active';
+                buttonPreviewStatus.textContent = '버튼이 활성화되어 있어 사용자가 클릭할 수 있습니다';
+                buttonStatusDisplay.className = 'status-badge status-active';
+                buttonStatusDisplay.innerHTML = '<i class="fas fa-eye mr-2"></i>활성화됨';
+                buttonToggleStatus.textContent = '지원 버튼이 활성화되어 있습니다';
+            } else {
+                buttonPreview.className = 'preview-button-inactive';
+                buttonPreviewStatus.textContent = '버튼이 비활성화되어 있어 사용자가 클릭할 수 없습니다';
+                buttonStatusDisplay.className = 'status-badge status-inactive';
+                buttonStatusDisplay.innerHTML = '<i class="fas fa-eye-slash mr-2"></i>비활성화됨';
+                buttonToggleStatus.textContent = '지원 버튼이 비활성화되어 있습니다';
+            }
+        }
+
+        // Update period displays
+        function updatePeriodDisplays() {
+            document.getElementById('displayStartDate').textContent = settings.recruitmentPeriod.start;
+            document.getElementById('displayEndDate').textContent = settings.recruitmentPeriod.end;
+        }
+
+        // Update period calculations
+        function updatePeriodCalculations() {
+            const startDate = new Date(settings.recruitmentPeriod.start);
+            const endDate = new Date(settings.recruitmentPeriod.end);
+            const today = new Date();
+            
+            const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+            const remainingDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('totalDays').textContent = totalDays + '일';
+            
+            const remainingElement = document.getElementById('remainingDays');
+            const periodStatusElement = document.getElementById('periodStatus');
+            
+            if (today < startDate) {
+                // Upcoming
+                const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
+                remainingElement.textContent = daysUntilStart + '일 후 시작';
+                remainingElement.className = 'font-semibold text-blue-400';
+                periodStatusElement.className = 'date-status upcoming';
+                periodStatusElement.innerHTML = '<i class="fas fa-calendar-plus mr-2"></i>모집 시작 예정';
+            } else if (today >= startDate && today <= endDate) {
+                // Active
+                remainingElement.textContent = Math.max(0, remainingDays) + '일';
+                remainingElement.className = 'font-semibold text-green-400';
+                periodStatusElement.className = 'date-status active';
+                periodStatusElement.innerHTML = '<i class="fas fa-calendar-check mr-2"></i>모집 기간 중';
+            } else {
+                // Expired
+                const daysPastEnd = Math.ceil((today - endDate) / (1000 * 60 * 60 * 24));
+                remainingElement.textContent = daysPastEnd + '일 전 종료';
+                remainingElement.className = 'font-semibold text-red-400';
+                periodStatusElement.className = 'date-status expired';
+                periodStatusElement.innerHTML = '<i class="fas fa-calendar-times mr-2"></i>모집 종료';
+            }
+        }
+
+        // Update period preview
+        function updatePeriodPreview() {
+            const startDate = new Date(settings.recruitmentPeriod.start);
+            const endDate = new Date(settings.recruitmentPeriod.end);
+            const today = new Date();
+            
+            const formatDate = (date) => {
+                return date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월 ' + date.getDate() + '일';
+            };
+            
+            document.getElementById('periodPreview').textContent = 
+                formatDate(startDate) + ' ~ ' + formatDate(endDate);
+            
+            const periodPreviewStatus = document.getElementById('periodPreviewStatus');
+            
+            if (today < startDate) {
+                periodPreviewStatus.className = 'date-status upcoming';
+                periodPreviewStatus.innerHTML = '<i class="fas fa-calendar-plus mr-2"></i>모집 시작 예정';
+            } else if (today >= startDate && today <= endDate) {
+                periodPreviewStatus.className = 'date-status active';
+                periodPreviewStatus.innerHTML = '<i class="fas fa-calendar-check mr-2"></i>현재 모집중';
+            } else {
+                periodPreviewStatus.className = 'date-status expired';
+                periodPreviewStatus.innerHTML = '<i class="fas fa-calendar-times mr-2"></i>모집 종료';
+            }
+        }
+
+        // Update current status
+        function updateCurrentStatus() {
+            const currentStatus = document.getElementById('currentStatus');
+            const today = new Date();
+            const startDate = new Date(settings.recruitmentPeriod.start);
+            const endDate = new Date(settings.recruitmentPeriod.end);
+            const isInPeriod = today >= startDate && today <= endDate;
+            
+            if (settings.applyButtonEnabled && isInPeriod) {
+                currentStatus.className = 'status-badge status-active';
+                currentStatus.innerHTML = '<i class="fas fa-check-circle mr-2"></i>모집 활성화';
+            } else {
+                currentStatus.className = 'status-badge status-inactive';
+                currentStatus.innerHTML = '<i class="fas fa-times-circle mr-2"></i>모집 비활성화';
+            }
+        }
+
+        // Update all previews
+        function updateAllPreviews() {
+            updateApplyButtonPreview();
+            updatePeriodDisplays();
+            updatePeriodPreview();
+            updateCurrentStatus();
+        }
+
+        // Bulk action functions
+        function enableRecruitment() {
+            if (confirm('모집을 즉시 시작하시겠습니까?')) {
+                settings.applyButtonEnabled = true;
+                document.getElementById('applyButtonToggle').checked = true;
+                updateAllPreviews();
+                showNotification('모집이 즉시 시작되었습니다!', 'success');
+            }
+        }
+
+        function disableRecruitment() {
+            if (confirm('모집을 즉시 중단하시겠습니까?')) {
+                settings.applyButtonEnabled = false;
+                document.getElementById('applyButtonToggle').checked = false;
+                updateAllPreviews();
+                showNotification('모집이 즉시 중단되었습니다.', 'error');
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm('모든 설정을 기본값으로 초기화하시겠습니까?')) {
+                settings = {
+                    applyButtonEnabled: true,
+                    recruitmentPeriod: {
+                        start: '2025-08-01',
+                        end: '2025-09-01'
+                    },
+                    autoDisable: true,
+                    autoEnable: true
+                };
+                
+                document.getElementById('applyButtonToggle').checked = settings.applyButtonEnabled;
+                document.getElementById('startDate').value = settings.recruitmentPeriod.start;
+                document.getElementById('endDate').value = settings.recruitmentPeriod.end;
+                document.getElementById('autoDisableToggle').checked = settings.autoDisable;
+                document.getElementById('autoEnableToggle').checked = settings.autoEnable;
+                
+                updateAllPreviews();
+                updatePeriodCalculations();
+                showNotification('모든 설정이 기본값으로 초기화되었습니다.');
+            }
+        }
+
+        function exportSettings() {
+            const exportData = {
+                ...settings,
+                timestamp: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tcp_recruitment_settings.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('설정이 내보내기되었습니다.');
+        }
+
+        function saveAllSettings() {
+            // Mock save operation
+            showNotification('모든 설정이 저장되었습니다!', 'success');
+            
+            // Here you would typically send the settings to your backend
+            console.log('Saving settings:', settings);
+        }
+
+        function viewAllApplications() {
+            showNotification('지원서 관리 페이지로 이동합니다.');
+            // Here you would typically navigate to the applications management page
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-opacity ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Auto-update period status every minute
+        setInterval(updatePeriodCalculations, 60000);
+
+        // Initialize page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>

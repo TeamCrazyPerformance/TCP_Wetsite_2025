@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP Admin - Modify User Information | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100vh;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(168, 197, 230, 0.2);
+        }
+        .editable {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            color: #ffffff;
+            width: 100%;
+        }
+        .editable:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(168, 197, 230, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(168, 197, 230, 0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            background: rgba(168, 197, 230, 0.1);
+        }
+        .search-result-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .search-result-item:hover {
+            background: rgba(168, 197, 230, 0.05);
+        }
+        .search-result-item.selected {
+            background: rgba(168, 197, 230, 0.1);
+            border-left: 4px solid var(--accent-blue);
+        }
+        .tag {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.125rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        .tag .remove-tag {
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+        .user-form {
+            display: none;
+        }
+        .user-form.show {
+            display: block;
+        }
+        .loading-spinner {
+            border: 2px solid #374151;
+            border-top: 2px solid var(--accent-purple);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex min-h-screen">
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Dashboard</h3>
+                    <a href="admin.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">Overview</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Page Management</h3>
+                    <a href="admin_main.html" class="sidebar-link"><i class="fas fa-file-alt"></i><span class="ml-2">Main Page</span></a>
+                    <a href="admin_recruitment.html" class="sidebar-link"><i class="fas fa-bullhorn"></i><span class="ml-2">Recruitment Page</span></a>
+                    <a href="admin_announcement.html" class="sidebar-link"><i class="fas fa-newspaper"></i><span class="ml-2">Announcement Page</span></a>
+                    <a href="admin_study.html" class="sidebar-link"><i class="fas fa-book"></i><span class="ml-2">Study Group Page</span></a>
+                    <a href="admin_team.html" class="sidebar-link"><i class="fas fa-users"></i><span class="ml-2">Project Team Page</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Management</h3>
+                    <a href="admin_permission.html" class="sidebar-link"><i class="fas fa-user-shield"></i><span class="ml-2">Manage Permissions</span></a>
+                    <a href="admin_deletaccount.html" class="sidebar-link"><i class="fas fa-user-slash"></i><span class="ml-2">Delete Accounts</span></a>
+                    <a href="admin_modifyuserinfo.html" class="sidebar-link bg-gray-700 text-white"><i class="fas fa-database"></i><span class="ml-2">Modify Information</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Application Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-user-plus"></i><span class="ml-2">New Member Applications</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Web Server Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-server"></i><span class="ml-2">Server Tools</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col main-content">
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="orbitron text-2xl font-bold text-white hidden md:block">Modify User Information</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <!-- Search Section -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">사용자 검색</h3>
+                        </div>
+                        
+                        <div class="widget-card p-6 rounded-xl">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">학번으로 검색</label>
+                                    <div class="relative">
+                                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <input 
+                                            type="text" 
+                                            id="studentIdSearch" 
+                                            class="form-input pl-10" 
+                                            placeholder="학번을 입력하세요..."
+                                        >
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">이름으로 검색</label>
+                                    <div class="relative">
+                                        <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <input 
+                                            type="text" 
+                                            id="nameSearch" 
+                                            class="form-input pl-10" 
+                                            placeholder="실명을 입력하세요..."
+                                        >
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">닉네임으로 검색</label>
+                                    <div class="relative">
+                                        <i class="fas fa-at absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <input 
+                                            type="text" 
+                                            id="nicknameSearch" 
+                                            class="form-input pl-10" 
+                                            placeholder="사용자명을 입력하세요..."
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button onclick="searchUsers()" class="btn-primary">
+                                    <i class="fas fa-search mr-2"></i>검색
+                                </button>
+                                <button onclick="clearSearch()" class="btn-secondary">
+                                    <i class="fas fa-times mr-2"></i>초기화
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Search Results -->
+                    <section id="searchResultsSection" class="mb-8" style="display: none;">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold gradient-text">검색 결과</h3>
+                            <span id="resultCount" class="text-gray-400"></span>
+                        </div>
+                        
+                        <div class="widget-card rounded-xl overflow-hidden">
+                            <div id="searchResults">
+                                <!-- Search results will be populated here -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- User Information Form -->
+                    <section id="userFormSection" class="user-form">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold gradient-text">사용자 정보 수정</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Profile Card -->
+                            <div class="lg:col-span-1">
+                                <div class="widget-card p-6 rounded-xl text-center">
+                                    <div class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-transparent bg-gradient-to-r from-blue-500 to-purple-500 p-1">
+                                        <img id="userProfileImage" src="https://via.placeholder.com/128/A8C5E6/FFFFFF?text=User" alt="프로필 사진" class="w-full h-full object-cover rounded-full">
+                                    </div>
+                                    <div class="mb-4">
+                                        <h4 id="userDisplayName" class="text-xl font-bold mb-2 text-white">사용자 선택</h4>
+                                        <p id="userDisplayInfo" class="text-blue-300 mb-2">정보를 불러오는 중...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Details Form -->
+                            <div class="lg:col-span-2">
+                                <form id="userInfoForm" class="widget-card p-6 rounded-xl">
+                                    <h5 class="text-lg font-bold mb-6 text-white">기본 정보</h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">학번</label>
+                                            <input type="text" id="studentId" class="editable" placeholder="학번을 입력하세요">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">이름</label>
+                                            <input type="text" id="realName" class="editable" placeholder="실명을 입력하세요">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">사용자명</label>
+                                            <input type="text" id="username" class="editable" placeholder="사용자명을 입력하세요">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">학과</label>
+                                            <input type="text" id="department" class="editable" placeholder="학과를 입력하세요">
+                                        </div>
+                                    </div>
+
+                                    <h5 class="text-lg font-bold mb-6 text-white">연락처 정보</h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">전화번호</label>
+                                            <input type="tel" id="phoneNumber" class="editable" placeholder="010-0000-0000">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">이메일</label>
+                                            <input type="email" id="email" class="editable" placeholder="이메일을 입력하세요">
+                                        </div>
+                                    </div>
+
+                                    <h5 class="text-lg font-bold mb-6 text-white">학적 정보</h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">입부년도</label>
+                                            <input type="number" id="admissionYear" class="editable" min="2000" max="2030" placeholder="2024">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">재적 상태</label>
+                                            <select id="enrollmentStatus" class="editable">
+                                                <option value="">선택하세요</option>
+                                                <option value="재학">재학</option>
+                                                <option value="휴학">휴학</option>
+                                                <option value="졸업">졸업</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">생일</label>
+                                            <input type="date" id="birthday" class="editable">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">현재 직장 (졸업 후)</label>
+                                        <input type="text" id="currentWorkplace" class="editable" placeholder="현재 직장을 입력하세요 (선택사항)">
+                                    </div>
+
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">기술 스택</label>
+                                        <div id="techStackTags" class="flex flex-wrap gap-2 mb-2 min-h-[2rem] p-2 border border-gray-600 rounded-lg">
+                                            <!-- Tech stack tags will appear here -->
+                                        </div>
+                                        <input type="text" id="techStackInput" class="editable" placeholder="기술 스택을 입력하고 Enter를 누르세요" onkeypress="addTechStack(event)">
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">GitHub URL</label>
+                                            <input type="url" id="githubUrl" class="editable" placeholder="https://github.com/username">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">포트폴리오/블로그 URL</label>
+                                            <input type="url" id="portfolioUrl" class="editable" placeholder="https://portfolio.example.com">
+                                        </div>
+                                    </div>
+
+                                    <div class="flex space-x-4 pt-4">
+                                        <button type="submit" class="btn-primary">
+                                            <i class="fas fa-save mr-2"></i>변경사항 저장
+                                        </button>
+                                        <button type="button" onclick="cancelEdit()" class="btn-secondary">
+                                            <i class="fas fa-times mr-2"></i>취소
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Mock user database
+        let users = [
+            {
+                id: 1,
+                studentId: '2020001234',
+                realName: '김민준',
+                username: 'kimminjun',
+                department: '컴퓨터공학과',
+                phoneNumber: '010-1234-5678',
+                email: 'kimminjun@seoultech.ac.kr',
+                admissionYear: 2020,
+                enrollmentStatus: '재학',
+                birthday: '2000-03-15',
+                currentWorkplace: '',
+                techStack: ['JavaScript', 'React', 'Node.js'],
+                githubUrl: 'https://github.com/kimminjun',
+                portfolioUrl: 'https://kimminjun.dev',
+                profileImage: 'https://via.placeholder.com/128/A8C5E6/FFFFFF?text=KM'
+            },
+            {
+                id: 2,
+                studentId: '2021002345',
+                realName: '이서연',
+                username: 'leeseoyeon',
+                department: '컴퓨터공학과',
+                phoneNumber: '010-2345-6789',
+                email: 'leeseoyeon@seoultech.ac.kr',
+                admissionYear: 2021,
+                enrollmentStatus: '재학',
+                birthday: '2001-07-22',
+                currentWorkplace: '',
+                techStack: ['Python', 'AI/ML', 'TensorFlow'],
+                githubUrl: 'https://github.com/leeseoyeon',
+                portfolioUrl: '',
+                profileImage: 'https://via.placeholder.com/128/C5A8E6/FFFFFF?text=LS'
+            },
+            {
+                id: 3,
+                studentId: '2019003456',
+                realName: '박지훈',
+                username: 'parkjihun',
+                department: '컴퓨터공학과',
+                phoneNumber: '010-3456-7890',
+                email: 'parkjihun@seoultech.ac.kr',
+                admissionYear: 2019,
+                enrollmentStatus: '졸업',
+                birthday: '1999-12-08',
+                currentWorkplace: '네이버',
+                techStack: ['Java', 'Spring', 'MySQL'],
+                githubUrl: 'https://github.com/parkjihun',
+                portfolioUrl: 'https://parkjihun.blog',
+                profileImage: 'https://via.placeholder.com/128/A8E6C5/FFFFFF?text=PJ'
+            }
+        ];
+
+        let currentUser = null;
+        let currentTechStack = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+            }
+
+            // Form submission handler
+            document.getElementById('userInfoForm').addEventListener('submit', handleFormSubmit);
+        });
+
+        function searchUsers() {
+            const studentId = document.getElementById('studentIdSearch').value.trim();
+            const name = document.getElementById('nameSearch').value.trim();
+            const nickname = document.getElementById('nicknameSearch').value.trim();
+
+            if (!studentId && !name && !nickname) {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+
+            let results = users.filter(user => {
+                return (studentId && user.studentId.includes(studentId)) ||
+                       (name && user.realName.includes(name)) ||
+                       (nickname && user.username.includes(nickname));
+            });
+
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(results) {
+            const resultsContainer = document.getElementById('searchResults');
+            const resultCount = document.getElementById('resultCount');
+            const resultsSection = document.getElementById('searchResultsSection');
+
+            resultCount.textContent = `${results.length}명의 사용자를 찾았습니다`;
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="p-8 text-center text-gray-400">
+                        <i class="fas fa-search text-4xl mb-4"></i>
+                        <p>검색 결과가 없습니다.</p>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = results.map(user => `
+                    <div class="search-result-item" onclick="selectUser(${user.id})">
+                        <div class="flex items-center space-x-4">
+                            <img src="${user.profileImage}" alt="${user.realName}" class="w-12 h-12 rounded-full">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">${user.realName}</h4>
+                                <p class="text-sm text-gray-400">@${user.username} · ${user.studentId}</p>
+                                <p class="text-xs text-gray-500">${user.department} · ${user.enrollmentStatus}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-blue-300">${user.admissionYear}년 입부</p>
+                                <p class="text-xs text-gray-500">${user.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            resultsSection.style.display = 'block';
+        }
+
+        function selectUser(userId) {
+            // Remove previous selection
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Add selection to clicked item
+            event.currentTarget.classList.add('selected');
+
+            // Find user and populate form
+            currentUser = users.find(user => user.id === userId);
+            if (currentUser) {
+                populateUserForm(currentUser);
+                document.getElementById('userFormSection').classList.add('show');
+            }
+        }
+
+        function populateUserForm(user) {
+            // Update profile display
+            document.getElementById('userProfileImage').src = user.profileImage;
+            document.getElementById('userDisplayName').textContent = user.realName;
+            document.getElementById('userDisplayInfo').textContent = `${user.department} · ${user.studentId}`;
+
+            // Populate form fields
+            document.getElementById('studentId').value = user.studentId;
+            document.getElementById('realName').value = user.realName;
+            document.getElementById('username').value = user.username;
+            document.getElementById('department').value = user.department;
+            document.getElementById('phoneNumber').value = user.phoneNumber;
+            document.getElementById('email').value = user.email;
+            document.getElementById('admissionYear').value = user.admissionYear;
+            document.getElementById('enrollmentStatus').value = user.enrollmentStatus;
+            document.getElementById('birthday').value = user.birthday;
+            document.getElementById('currentWorkplace').value = user.currentWorkplace || '';
+            document.getElementById('githubUrl').value = user.githubUrl || '';
+            document.getElementById('portfolioUrl').value = user.portfolioUrl || '';
+
+            // Populate tech stack
+            currentTechStack = [...user.techStack];
+            updateTechStackDisplay();
+        }
+
+        function addTechStack(event) {
+            if (event.key === 'Enter' && event.target.value.trim()) {
+                event.preventDefault();
+                const tech = event.target.value.trim();
+                if (!currentTechStack.includes(tech)) {
+                    currentTechStack.push(tech);
+                    updateTechStackDisplay();
+                }
+                event.target.value = '';
+            }
+        }
+
+        function removeTechStack(tech) {
+            currentTechStack = currentTechStack.filter(t => t !== tech);
+            updateTechStackDisplay();
+        }
+
+        function updateTechStackDisplay() {
+            const container = document.getElementById('techStackTags');
+            container.innerHTML = currentTechStack.map(tech => `
+                <span class="tag">
+                    ${tech}
+                    <i class="fas fa-times remove-tag" onclick="removeTechStack('${tech}')"></i>
+                </span>
+            `).join('');
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            if (!currentUser) {
+                alert('수정할 사용자를 선택해주세요.');
+                return;
+            }
+
+            // Get form data
+            const formData = {
+                studentId: document.getElementById('studentId').value,
+                realName: document.getElementById('realName').value,
+                username: document.getElementById('username').value,
+                department: document.getElementById('department').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                email: document.getElementById('email').value,
+                admissionYear: parseInt(document.getElementById('admissionYear').value),
+                enrollmentStatus: document.getElementById('enrollmentStatus').value,
+                birthday: document.getElementById('birthday').value,
+                currentWorkplace: document.getElementById('currentWorkplace').value,
+                techStack: currentTechStack,
+                githubUrl: document.getElementById('githubUrl').value,
+                portfolioUrl: document.getElementById('portfolioUrl').value
+            };
+
+            // Validate required fields
+            if (!formData.studentId || !formData.realName || !formData.username || !formData.email) {
+                alert('필수 항목을 모두 입력해주세요.');
+                return;
+            }
+
+            // Update user data
+            Object.assign(currentUser, formData);
+
+            // Show success message
+            showNotification('사용자 정보가 성공적으로 업데이트되었습니다.', 'success');
+            
+            // Update search results if visible
+            if (document.getElementById('searchResultsSection').style.display !== 'none') {
+                searchUsers();
+            }
+        }
+
+        function cancelEdit() {
+            if (confirm('변경사항을 취소하시겠습니까?')) {
+                document.getElementById('userFormSection').classList.remove('show');
+                currentUser = null;
+                currentTechStack = [];
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('studentIdSearch').value = '';
+            document.getElementById('nameSearch').value = '';
+            document.getElementById('nicknameSearch').value = '';
+            document.getElementById('searchResultsSection').style.display = 'none';
+            document.getElementById('userFormSection').classList.remove('show');
+            currentUser = null;
+            currentTechStack = [];
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-opacity ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

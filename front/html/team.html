@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Team - TCP</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 197, 230, 0.3);
+        }
+        .recruitment-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .recruitment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        .recruitment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-out;
+        }
+        .recruitment-card:hover::before {
+            transform: translateY(0);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .role-badge {
+            background: rgba(168, 197, 230, 0.2);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.125rem;
+            display: inline-block;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .status-recruiting {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+        }
+        .status-closed {
+            background: rgba(156, 163, 175, 0.3);
+            color: #9ca3af;
+        }
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(168, 197, 230, 0.3);
+            margin-right: -8px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .member-avatar:hover {
+            border-color: var(--accent-blue);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .leader-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            border: 2px solid var(--secondary-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+        .image-carousel {
+            position: relative;
+            max-height: 300px;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        .carousel-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: none;
+        }
+        .carousel-image.active {
+            display: block;
+        }
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .carousel-prev {
+            left: 1rem;
+        }
+        .carousel-next {
+            right: 1rem;
+        }
+        .tech-tag {
+            background: rgba(168, 197, 230, 0.1);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            margin: 0.25rem;
+            display: inline-block;
+        }
+        .form-input, .form-textarea, .form-select {
+            background: rgba(42, 42, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            width: 100%;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(168, 197, 230, 0.2);
+        }
+        .disabled-card {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .disabled-card:hover {
+            transform: none;
+        }
+        .tag-cloud button:focus, .tag-cloud button:hover {
+            ring: 2px;
+            ring-color: var(--accent-blue);
+            outline: none;
+        }
+        .add-btn {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(168, 230, 197, 0.3);
+        }
+    </style>
+</head>
+<body class="pt-16">
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10">
+                        <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h1 class="orbitron text-xl font-bold gradient-text">TCP</h1>
+                        <p class="text-xs text-gray-400">Team Crazy Performance</p>
+                    </div>
+                </a>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="about.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">About</a>
+                    <a href="members.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Members</a>
+                    <a href="recruitment.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Recruitment</a>
+                    <a href="announcement.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Announcement</a>
+                    <a href="study.html" class="nav-link orbitron text-sm font-medium text-gray-300 hover:text-white">Study</a>
+                    <a href="findyourteam.html" class="nav-link orbitron text-sm font-medium text-white active">Find Your Team</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                    <div class="flex items-center space-x-2">
+                        <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                        <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                    </div>
+                    <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                </div>
+                
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-white"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <div class="text-center mb-12">
+            <h1 class="orbitron text-4xl md:text-5xl font-bold gradient-text mb-4">Find Your Team</h1>
+            <p class="text-lg text-gray-400 mb-8">함께 성장하고 도전할 최고의 팀원을 찾아보세요.</p>
+            <button onclick="openRecruitmentModal()" class="cta-button px-6 py-3 rounded-lg text-lg font-bold text-white" aria-label="팀 모집 시작하기">
+                <i class="fas fa-plus mr-2"></i>팀 모집 시작하기
+            </button>
+        </div>
+
+        <div class="mb-10 p-6 bg-gray-900 rounded-xl border border-gray-800">
+            <div class="grid md:grid-cols-4 gap-6">
+                <div>
+                    <label for="search" class="orbitron text-sm font-medium text-gray-300 mb-2">Search</label>
+                    <div class="relative">
+                        <input type="text" id="search" placeholder="제목 또는 태그로 검색" class="w-full bg-gray-800 border-gray-700 rounded-lg py-2 px-4 focus:ring-2 focus:ring-accent-blue focus:outline-none">
+                        <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    </div>
+                </div>
+                <div>
+                    <label for="filter-role" class="orbitron text-sm font-medium text-gray-300 mb-2">Role</label>
+                    <select id="filter-role" class="w-full bg-gray-800 border-gray-700 rounded-lg py-2 px-4 focus:ring-2 focus:ring-accent-blue focus:outline-none">
+                        <option value="">모든 역할</option>
+                        <option value="기획">기획</option>
+                        <option value="디자인">디자인</option>
+                        <option value="프론트엔드">프론트엔드</option>
+                        <option value="백엔드">백엔드</option>
+                        <option value="AI">AI</option>
+                        <option value="알고리즘">알고리즘</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filter-status" class="orbitron text-sm font-medium text-gray-300 mb-2">Status</label>
+                    <select id="filter-status" class="w-full bg-gray-800 border-gray-700 rounded-lg py-2 px-4 focus:ring-2 focus:ring-accent-blue focus:outline-none">
+                        <option value="">모든 상태</option>
+                        <option value="모집중">모집중</option>
+                        <option value="모집완료">모집완료</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filter-category" class="orbitron block text-sm font-medium text-gray-300 mb-2">Category</label>
+                    <select id="filter-category" class="w-full bg-gray-800 border-gray-700 rounded-lg py-2 px-4 focus:ring-2 focus:ring-accent-blue focus:outline-none">
+                        <option value="">모든 카테고리</option>
+                        <option value="해커톤">해커톤</option>
+                        <option value="공모전">공모전</option>
+                        <option value="프로젝트">프로젝트</option>
+                        <option value="스터디">스터디</option>
+                    </select>
+                </div>
+            </div>
+             <div class="mt-6">
+                <div id="tag-cloud" class="flex flex-wrap gap-2">
+                    <button class="tag-btn px-3 py-1 bg-blue-900 text-blue-300 rounded-full text-xs hover:bg-blue-800 transition-colors focus:ring-2 focus:ring-blue-400">AI</button>
+                    <button class="tag-btn px-3 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs hover:bg-yellow-800 transition-colors focus:ring-2 focus:ring-yellow-400">해커톤</button>
+                    <button class="tag-btn px-3 py-1 bg-green-900 text-green-300 rounded-full text-xs hover:bg-green-800 transition-colors focus:ring-2 focus:ring-green-400">프론트엔드</button>
+                    <button class="tag-btn px-3 py-1 bg-purple-900 text-purple-300 rounded-full text-xs hover:bg-purple-800 transition-colors focus:ring-2 focus:ring-purple-400">백엔드</button>
+                    <button class="tag-btn px-3 py-1 bg-pink-900 text-pink-300 rounded-full text-xs hover:bg-pink-800 transition-colors focus:ring-2 focus:ring-pink-400">공모전</button>
+                    <button class="tag-btn px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-xs hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-gray-400">초보환영</button>
+                    <button class="tag-btn px-3 py-1 bg-indigo-900 text-indigo-300 rounded-full text-xs hover:bg-indigo-800 transition-colors focus:ring-2 focus:ring-indigo-400">알고리즘</button>
+                    <button class="tag-btn px-3 py-1 bg-red-900 text-red-300 rounded-full text-xs hover:bg-red-800 transition-colors focus:ring-2 focus:ring-red-400">Unity</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="recruitment-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Team cards will be dynamically generated here -->
+        </div>
+    </main>
+
+    <footer class="bg-black border-t border-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10">
+                            <img src="logo.svg" alt="TCP 로고" class="w-full h-full object-contain">
+                        </div>
+                        <h3 class="orbitron text-lg font-bold gradient-text">TCP</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Team Crazy Performance<br>
+                        컴퓨터공학 동아리
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">임원진</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div><span class="text-blue-300">회장:</span> 김TCP</div>
+                        <div><span class="text-purple-300">부회장:</span> 이Performance</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">연락처</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div class="flex items-center space-x-2"><i class="fas fa-phone text-blue-400"></i><span>010-1234-5678</span></div>
+                        <div class="flex items-center space-x-2"><i class="fas fa-envelope text-purple-400"></i><span>tcp@university.ac.kr</span></div>
+                        <div class="flex items-center space-x-2"><i class="fab fa-instagram text-pink-400"></i><a href="#" class="hover:text-pink-300 transition-colors">@tcp_official</a></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-white">법적 정보</h4>
+                    <div class="space-y-2 text-sm">
+                        <div><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">이용약관</a></div>
+                        <div><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">개인정보처리방침</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-400">© 2024 TCP (Team Crazy Performance). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Recruitment Form Modal -->
+    <div id="recruitment-modal" class="modal" aria-labelledby="recruitment-modal-title" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="recruitment-modal-title" class="text-2xl font-bold gradient-text">팀 모집 시작하기</h3>
+                <button onclick="closeRecruitmentModal()" class="text-gray-400 hover:text-white text-2xl" aria-label="모달 닫기">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="recruitment-form" class="space-y-6">
+                <!-- === Images (Top of Form) : Local Upload ===================== -->
+                <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">프로젝트 이미지 (여러 장 업로드 가능)</label>
+
+                <input id="image-input" type="file" accept="image/*" multiple
+                        class="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4
+                                file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                                file:bg-gray-700 file:text-white hover:file:bg-gray-600">
+
+                <!-- 미리보기 -->
+                <div id="image-preview-list" class="mt-3 grid grid-cols-4 gap-3"></div>
+
+                <p class="text-xs text-gray-500 mt-2">* 10MB 이하의 이미지만 업로드하세요. 첫 번째 이미지가 카드 썸네일로 사용됩니다.</p>
+                </div>
+                <!-- ============================================================= -->
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="project-title" class="block text-sm font-medium text-gray-300 mb-2">프로젝트 제목 *</label>
+                        <input type="text" id="project-title" class="form-input" placeholder="프로젝트 제목을 입력하세요" required>
+                    </div>
+                    <div>
+                        <label for="project-category" class="block text-sm font-medium text-gray-300 mb-2">카테고리 *</label>
+                        <select id="project-category" class="form-select" required>
+                            <option value="">카테고리를 선택하세요</option>
+                            <option value="해커톤">해커톤</option>
+                            <option value="공모전">공모전</option>
+                            <option value="프로젝트">프로젝트</option>
+                            <option value="스터디">스터디</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="project-period" class="block text-sm font-medium text-gray-300 mb-2">진행 기간 *</label>
+                        <input type="text" id="project-period" class="form-input" placeholder="2024.07.14 - 2024.07.18" required>
+                    </div>
+                    <div>
+                        <label for="application-deadline" class="block text-sm font-medium text-gray-300 mb-2">지원 마감일 *</label>
+                        <input type="date" id="application-deadline" class="form-input" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="project-description" class="block text-sm font-medium text-gray-300 mb-2">프로젝트 설명 *</label>
+                    <textarea id="project-description" rows="4" class="form-textarea" placeholder="프로젝트에 대한 상세 설명을 입력하세요" required></textarea>
+                </div>
+
+                <!-- === Needed Roles (Dynamic) ================================= -->
+                <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">필요한 역할 *</label>
+
+                <!-- 역할 행(역할명 + 인원수) 동적 리스트 -->
+                <div id="role-list" class="space-y-2"></div>
+
+                <div class="flex gap-2 mt-2">
+                    <button type="button" class="add-btn"
+                            onclick="addRoleRow()">
+                    <i class="fas fa-plus mr-1"></i>역할 추가
+                    </button>
+                </div>
+
+                <!-- 요약 미리보기 -->
+                <div id="role-preview" class="text-xs text-gray-400 mt-2"></div>
+                </div>
+                <!-- ============================================================ -->
+
+                <div>
+                    <label for="tech-stack" class="block text-sm font-medium text-gray-300 mb-2">기술 스택</label>
+                    <input type="text" id="tech-stack" class="form-input" placeholder="React, Node.js, MongoDB (쉼표로 구분)">
+                </div>
+
+                <div>
+                    <label for="project-tags" class="block text-sm font-medium text-gray-300 mb-2">태그</label>
+                    <input type="text" id="project-tags" class="form-input" placeholder="AI, 해커톤, 초보환영 (쉼표로 구분)">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="project-location" class="block text-sm font-medium text-gray-300 mb-2">진행 방식</label>
+                        <select id="project-location" class="form-select">
+                            <option value="온라인">온라인</option>
+                            <option value="오프라인">오프라인</option>
+                            <option value="혼합">온라인 + 오프라인</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="selection-process" class="block text-sm font-medium text-gray-300 mb-2">선발 과정</label>
+                        <input type="text" id="selection-process" class="form-input" placeholder="포트폴리오 검토 → 간단한 면담">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="project-links" class="block text-sm font-medium text-gray-300 mb-2">관련 링크</label>
+                    <input type="text" id="project-links" class="form-input" placeholder="https://github.com/project (쉼표로 구분)">
+                </div>
+
+                <div>
+                    <label for="contact-info" class="block text-sm font-medium text-gray-300 mb-2">연락처 *</label>
+                    <input type="text" id="contact-info" class="form-input" placeholder="이메일 또는 오픈채팅 링크" required>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeRecruitmentModal()" class="px-6 py-2 border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">취소</button>
+                    <button type="submit" class="cta-button px-6 py-2 rounded-lg font-medium text-white">모집 시작하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Detail Modal -->
+    <div id="team-detail-modal" class="modal" aria-labelledby="team-detail-modal-title" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="team-detail-modal-title" class="text-2xl font-bold gradient-text">팀 상세 정보</h3>
+                <button onclick="closeTeamDetailModal()" class="text-gray-400 hover:text-white text-2xl" aria-label="모달 닫기">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="team-detail-content">
+                <!-- Content will be dynamically filled -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Team data structure
+        let teamsData = [
+            {
+                id: 1,
+                title: "2025 AI Creativity Hackathon",
+                category: "해커톤",
+                leader: {
+                    name: "김AI",
+                    avatar: "https://via.placeholder.com/40/A8C5E6/FFFFFF?text=김",
+                    role: "팀 리더"
+                },
+                status: "모집중",
+                period: "2025.8.14 – 2025.12.18",
+                deadline: "2025-11-30",
+                description: "AI 모델을 활용해 사회 문제를 해결하는 프로젝트. 초보도 환영합니다! 함께 창의적인 아이디어를 구현해보세요.",
+                fullDescription: `이번 AI Creativity Hackathon은 인공지능 기술을 활용하여 실제 사회 문제를 해결하는 창의적인 솔루션을 개발하는 대회입니다.
+
+팀원들과 함께 브레인스토밍을 통해 문제를 정의하고, AI 모델을 설계하여 프로토타입을 완성합니다. 경험이 부족하더라도 배움의 의지가 있다면 누구나 환영합니다.
+
+대회 기간 동안 전문가 멘토링과 다양한 워크숍이 제공되며, 우승팀에게는 상금과 함께 실제 서비스 런칭 기회가 주어집니다.`,
+                neededRoles: "기획 1명, 프론트엔드 1명",
+                techStack: ["Python", "TensorFlow", "React", "FastAPI"],
+                tags: ["AI", "해커톤", "초보환영"],
+                images: [
+                    "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=2020&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1550063873-ab792950096b?q=80&w=1974&auto=format&fit=crop"
+                ],
+                links: ["https://github.com/ai-hackathon-team", "https://discord.gg/ai-hackathon"],
+                location: "온라인",
+                selectionProcess: "포트폴리오 검토 → 화상 면담",
+                contact: "ai.hackathon@tcp.com",
+                goals: ["AI 모델 개발", "웹 서비스 구현", "사회 문제 해결 방안 제시"],
+                benefits: ["전문가 멘토링", "상금 및 인증서", "네트워킹 기회"]
+            },
+            {
+                id: 2,
+                title: "Software Maestro Pre-screening",
+                category: "공모전",
+                leader: {
+                    name: "박개발",
+                    avatar: "https://via.placeholder.com/40/C5A8E6/FFFFFF?text=박",
+                    role: "팀 리더"
+                },
+                status: "모집중",
+                period: "2025.08.04 – 2025.09.15",
+                deadline: "2025-11-15",
+                description: "실 서비스 지향 프로젝트를 위한 풀스택 팀 빌딩 중입니다.",
+                fullDescription: `Software Maestro 지원을 위한 팀 프로젝트입니다. 실제 사용자들이 사용할 수 있는 의미있는 서비스를 개발하여 SW 마에스트로 과정에 지원할 예정입니다.
+
+저희는 이미 기획과 프론트엔드가 확정되어 있으며, 백엔드 개발자를 찾고 있습니다. Spring Boot와 AWS 경험이 있으시면 더욱 좋습니다.
+
+함께 좋은 아이디어를 현실로 만들어 나가며, SW 마에스트로 과정까지 함께 도전해보실 분을 기다립니다.`,
+                neededRoles: "백엔드 1명",
+                techStack: ["Spring Boot", "React", "AWS", "MySQL"],
+                tags: ["공모전", "백엔드"],
+                images: [
+                    "https://images.unsplash.com/photo-1550063873-ab792950096b?q=80&w=1974&auto=format&fit=crop"
+                ],
+                links: ["https://github.com/sw-maestro-team"],
+                location: "온라인 + 오프라인",
+                selectionProcess: "기술 면담 → 프로젝트 계획 논의",
+                contact: "swmaestro@tcp.com",
+                goals: ["실서비스 개발", "SW 마에스트로 선발", "팀워크 향상"],
+                benefits: ["SW 마에스트로 지원", "실무 경험", "포트폴리오 강화"]
+            },
+            {
+                id: 3,
+                title: "대학생 연합 앱개발 프로젝트",
+                category: "프로젝트",
+                leader: {
+                    name: "이앱개발",
+                    avatar: "https://via.placeholder.com/40/A8E6C5/FFFFFF?text=이",
+                    role: "팀 리더"
+                },
+                status: "모집중",
+                period: "2025.09.01 – 2025.12.15",
+                deadline: "2025-08-20",
+                description: "캠퍼스 생활을 편리하게 만들어 줄 앱을 함께 만들어요!",
+                fullDescription: `대학생들의 캠퍼스 생활을 더욱 편리하게 만들어줄 종합 모바일 애플리케이션을 개발하는 장기 프로젝트입니다.
+
+학생식당 메뉴 정보, 강의실 예약, 동아리 활동 관리, 중고거래 등 다양한 기능을 포함한 올인원 캠퍼스 앱을 목표로 합니다.
+
+초보자도 환영하며, React Native를 사용한 크로스플랫폼 개발로 진행할 예정입니다. 실제 출시까지를 목표로 하는 의미있는 프로젝트입니다.`,
+                neededRoles: "디자인 1명, 프론트엔드 2명, 백엔드 1명",
+                techStack: ["React Native", "Node.js", "MongoDB", "Firebase"],
+                tags: ["프로젝트", "프론트엔드", "백엔드", "디자인", "초보환영"],
+                images: [
+                    "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=2070&auto=format&fit=crop"
+                ],
+                links: ["https://github.com/campus-app-team", "https://figma.com/campus-app-design"],
+                location: "오프라인",
+                selectionProcess: "지원서 검토 → 팀 미팅 → 최종 선발",
+                contact: "campus.app@tcp.com",
+                goals: ["모바일 앱 개발", "실제 서비스 출시", "사용자 경험 최적화"],
+                benefits: ["실무 경험", "포트폴리오", "앱 출시 경험"]
+            },
+            {
+                id: 4,
+                title: "ICPC 예선 대비 스터디",
+                category: "스터디",
+                leader: {
+                    name: "알고마스터",
+                    avatar: "https://via.placeholder.com/40/E6A8C5/FFFFFF?text=알",
+                    role: "스터디 리더"
+                },
+                status: "모집완료",
+                period: "2025.03.10 – 2025.05.30",
+                deadline: "2025-03-01",
+                description: "ACM-ICPC 대회 준비를 위한 집중 스터디 그룹",
+                fullDescription: `ACM-ICPC 프로그래밍 대회 예선 통과를 목표로 하는 집중 알고리즘 스터디입니다.
+
+매주 2회 정기 모임을 통해 다양한 알고리즘 문제를 함께 풀고, 실전 대비 모의 대회를 진행합니다. 개인의 실력 향상뿐만 아니라 팀워크도 중요한 요소입니다.
+
+C++ 기본 문법을 알고 계시고, 백준 온라인 저지에서 최소 실버 등급 이상의 실력을 가지신 분들을 대상으로 합니다.`,
+                neededRoles: "알고리즘 3명",
+                techStack: ["C++", "Algorithm", "Data Structure"],
+                tags: ["알고리즘", "공모전"],
+                images: [
+                    "https://images.unsplash.com/photo-1517694712202-1428bc64a25a?q=80&w=2070&auto=format&fit=crop"
+                ],
+                links: ["https://github.com/icpc-study-group"],
+                location: "오프라인",
+                selectionProcess: "알고리즘 테스트 → 면담",
+                contact: "icpc.study@tcp.com",
+                goals: ["ICPC 예선 통과", "알고리즘 실력 향상", "팀워크 개발"],
+                benefits: ["체계적인 학습", "모의 대회 경험", "네트워킹"]
+            }
+        ];
+
+        let currentImageIndex = 0;
+        let currentTeam = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTeamCards();
+            setupFilters();
+            setupModal();
+        });
+
+        // Render team cards
+        function renderTeamCards() {
+            const grid = document.getElementById('recruitment-grid');
+            grid.innerHTML = '';
+
+            teamsData.forEach(team => {
+                const isExpired = new Date(team.deadline) < new Date();
+                const isDisabled = team.status === '모집완료' || isExpired;
+                
+                const card = document.createElement('div');
+                card.className = `recruitment-card rounded-xl overflow-hidden ${isDisabled ? 'disabled-card' : 'cursor-pointer'}`;
+                card.dataset.title = team.title.toLowerCase();
+                card.dataset.tags = team.tags.join(',').toLowerCase();
+                card.dataset.role = team.neededRoles.toLowerCase();
+                card.dataset.status = team.status;
+                card.dataset.category = team.category;
+
+                if (!isDisabled) {
+                    card.onclick = () => openTeamDetailModal(team.id);
+                }
+
+                card.innerHTML = `
+                    <img src="${team.images[0]}" alt="${team.title}" class="w-full h-40 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <span class="text-xs font-semibold text-accent-blue block">${team.category} 팀원 모집</span>
+                            <span class="status-badge ${team.status === '모집중' ? 'status-recruiting' : 'status-closed'}">${team.status}</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-3">${team.title}</h3>
+                        
+                        <!-- Leader Info -->
+                        <div class="flex items-center mb-4">
+                            <div class="relative">
+                                <img src="${team.leader.avatar}" alt="${team.leader.name}" class="w-10 h-10 rounded-full border-2 border-accent-blue">
+                                <div class="leader-badge">
+                                    <i class="fas fa-crown text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-semibold text-white">${team.leader.name}</div>
+                                <div class="text-xs text-gray-400">${team.leader.role}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-sm text-gray-400 space-y-2 mb-4">
+                            <p><i class="fas fa-users mr-2 w-4 text-center"></i><strong class="text-gray-300">필요 역할:</strong> ${team.neededRoles}</p>
+                            <p><i class="fas fa-calendar-alt mr-2 w-4 text-center"></i><strong class="text-gray-300">일정:</strong> ${team.period}</p>
+                            <p><i class="fas fa-info-circle mr-2 w-4 text-center"></i>${team.description}</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${team.tags.map(tag => {
+                                const colorMap = {
+                                    'AI': 'bg-blue-900 text-blue-300',
+                                    '해커톤': 'bg-yellow-900 text-yellow-300',
+                                    '프론트엔드': 'bg-green-900 text-green-300',
+                                    '백엔드': 'bg-purple-900 text-purple-300',
+                                    '공모전': 'bg-pink-900 text-pink-300',
+                                    '초보환영': 'bg-gray-700 text-gray-300',
+                                    '프로젝트': 'bg-indigo-900 text-indigo-300',
+                                    '알고리즘': 'bg-red-900 text-red-300'
+                                };
+                                const colorClass = colorMap[tag] || 'bg-gray-700 text-gray-300';
+                                return `<span class="px-2 py-1 ${colorClass} rounded-full text-xs">${tag}</span>`;
+                            }).join('')}
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs ${isExpired ? 'text-red-500' : 'text-red-400'}">
+                                ${isExpired ? '마감됨' : `마감: ${team.deadline}`}
+                            </span>
+                            <button 
+                                class="${isDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'cta-button text-white'} px-4 py-2 rounded-lg text-sm font-bold"
+                                ${isDisabled ? 'disabled' : ''}
+                                onclick="${isDisabled ? '' : `event.stopPropagation(); openTeamDetailModal(${team.id});`}"
+                            >
+                                ${isDisabled ? '마감' : '지원하기'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Setup filters
+        function setupFilters() {
+            const searchInput = document.getElementById('search');
+            const roleFilter = document.getElementById('filter-role');
+            const statusFilter = document.getElementById('filter-status');
+            const categoryFilter = document.getElementById('filter-category');
+            const tagButtons = document.querySelectorAll('.tag-btn');
+
+            let activeTag = '';
+
+            function filterCards() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const roleValue = roleFilter.value;
+                const statusValue = statusFilter.value;
+                const categoryValue = categoryFilter.value;
+
+                document.querySelectorAll('.recruitment-card').forEach(card => {
+                    const title = card.dataset.title;
+                    const tags = card.dataset.tags;
+                    const roles = card.dataset.role;
+                    const status = card.dataset.status;
+                    const category = card.dataset.category;
+
+                    const searchMatch = title.includes(searchTerm) || tags.includes(searchTerm);
+                    const roleMatch = !roleValue || roles.includes(roleValue.toLowerCase());
+                    const statusMatch = !statusValue || status === statusValue;
+                    const categoryMatch = !categoryValue || category === categoryValue;
+                    const tagMatch = !activeTag || tags.includes(activeTag.toLowerCase());
+
+                    if (searchMatch && roleMatch && statusMatch && categoryMatch && tagMatch) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // Event listeners
+            searchInput.addEventListener('input', filterCards);
+            roleFilter.addEventListener('change', filterCards);
+            statusFilter.addEventListener('change', filterCards);
+            categoryFilter.addEventListener('change', filterCards);
+
+            tagButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (activeTag === button.textContent) {
+                        activeTag = '';
+                        button.classList.remove('ring-2', 'ring-blue-400');
+                    } else {
+                        tagButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-400'));
+                        activeTag = button.textContent;
+                        button.classList.add('ring-2', 'ring-blue-400');
+                    }
+                    filterCards();
+                });
+            });
+        }
+
+        // Setup modal
+        function setupModal() {
+            // Close modals on outside click
+            document.getElementById('recruitment-modal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    closeRecruitmentModal();
+                }
+            });
+
+            document.getElementById('team-detail-modal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    closeTeamDetailModal();
+                }
+            });
+
+            // Close modals on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeRecruitmentModal();
+                    closeTeamDetailModal();
+                }
+            });
+
+            // Form submission
+            document.getElementById('recruitment-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleRecruitmentFormSubmit();
+            });
+        }
+
+        // 선택된 파일을 보관 (제출 시 업로드)
+        let selectedImages = [];
+
+        // 파일 입력 초기화 (모달 열 때마다 호출)
+        function initImageUploader() {
+        selectedImages = [];
+        document.getElementById('image-input').value = '';
+        document.getElementById('image-preview-list').innerHTML = '';
+
+        const input = document.getElementById('image-input');
+        input.onchange = () => {
+            const files = Array.from(input.files || []);
+            // 누적 방식: 새로 고르면서 추가
+            for (const f of files) {
+            if (!f.type.startsWith('image/')) continue;
+            if (f.size > 10 * 1024 * 1024) { // 10MB
+                alert(`"${f.name}" 은(는) 10MB를 초과합니다.`);
+                continue;
+            }
+            selectedImages.push(f);
+            }
+            renderImagePreviews();
+            // input 값을 비워 동일 파일 재선택 허용
+            input.value = '';
+        };
+        }
+
+        function renderImagePreviews() {
+        const wrap = document.getElementById('image-preview-list');
+        wrap.innerHTML = '';
+        selectedImages.forEach((file, idx) => {
+            const url = URL.createObjectURL(file);
+            const cell = document.createElement('div');
+            cell.className = 'relative';
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = file.name;
+            img.className = 'w-full h-24 object-cover rounded-md border border-gray-700';
+
+            const del = document.createElement('button');
+            del.type = 'button';
+            del.className = 'absolute -top-2 -right-2 w-7 h-7 rounded-full bg-black/70 border border-gray-600 hover:bg-black/90 flex items-center justify-center';
+            del.innerHTML = '<i class="fas fa-times text-xs"></i>';
+            del.onclick = () => {
+            // 미리보기 URL 해제
+            URL.revokeObjectURL(url);
+            selectedImages.splice(idx, 1);
+            renderImagePreviews();
+            };
+
+            cell.appendChild(img);
+            cell.appendChild(del);
+            wrap.appendChild(cell);
+        });
+        }
+
+        // 서버 업로드: FormData로 files[] 전송 → { urls: [...] } 응답 가정
+        async function uploadImagesToServer() {
+        if (selectedImages.length === 0) return [];
+
+        const fd = new FormData();
+        selectedImages.forEach(f => fd.append('files[]', f, f.name));
+
+        const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: fd,
+            // 주: 파일 업로드 시 Content-Type은 브라우저가 boundary 포함해 자동 설정
+            // 필요 시 인증 헤더 추가
+        });
+
+        if (!res.ok) {
+            const t = await res.text().catch(() => '');
+            throw new Error(`이미지 업로드 실패: ${res.status} ${t}`);
+        }
+        const data = await res.json();
+        // 기대 형식: { urls: ["https://.../a.jpg", "..."] }
+        if (!data || !Array.isArray(data.urls)) {
+            throw new Error('이미지 업로드 응답 형식이 올바르지 않습니다.');
+        }
+        return data.urls;
+        }
+
+        // ---------- Roles (dynamic) ----------
+        function addRoleRow(defaultRole = '', defaultCount = 1) {
+        const list = document.getElementById('role-list');
+
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-7 gap-2';
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.placeholder = '역할명 (예: 프론트엔드)';
+        nameInput.className = 'form-input col-span-4';
+        nameInput.value = defaultRole;
+
+        const countInput = document.createElement('input');
+        countInput.type = 'number';
+        countInput.min = '1';
+        countInput.step = '1';
+        countInput.placeholder = '인원';
+        countInput.className = 'form-input col-span-2';
+        countInput.value = String(defaultCount);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'px-3 py-2 rounded-lg border border-gray-600 hover:border-gray-400 col-span-1';
+        removeBtn.innerHTML = '<i class="fas fa-minus"></i>';
+        removeBtn.onclick = () => { row.remove(); updateRolePreview(); };
+
+        [nameInput, countInput].forEach(el => el.addEventListener('input', updateRolePreview));
+
+        row.appendChild(nameInput);
+        row.appendChild(countInput);
+        row.appendChild(removeBtn);
+        list.appendChild(row);
+
+        updateRolePreview();
+        }
+
+        function getRolesFromForm() {
+        const rows = Array.from(document.querySelectorAll('#role-list .grid'));
+        const roles = [];
+        for (const row of rows) {
+            const [nameEl, countEl] = row.querySelectorAll('input');
+            const role = (nameEl?.value || '').trim();
+            const count = parseInt((countEl?.value || '0'), 10);
+            if (role && count > 0) roles.push({ role, count });
+        }
+        return roles;
+        }
+
+        function rolesToSummary(roles) {
+        // "프론트엔드 2명, 백엔드 1명" 형식
+        return roles.map(r => `${r.role} ${r.count}명`).join(', ');
+        }
+
+        function updateRolePreview() {
+        const preview = document.getElementById('role-preview');
+        const summary = rolesToSummary(getRolesFromForm());
+        preview.textContent = summary ? `요약: ${summary}` : '';
+        }
+
+        // ---------- init each time modal opens ----------
+        function initRecruitmentFormEnhancements() {
+        // 초기화
+        document.getElementById('image-list').innerHTML = '';
+        document.getElementById('role-list').innerHTML = '';
+        document.getElementById('role-preview').textContent = '';
+
+        // 기본 행 1개씩
+        addImageRow();        // 빈 이미지행
+        addRoleRow('', 1);    // 빈 역할행
+        }
+
+        // Modal functions
+        function openRecruitmentModal() {
+            document.getElementById('recruitment-modal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            initRecruitmentFormEnhancements();
+            initImageUploader();
+        }
+
+        function closeRecruitmentModal() {
+            document.getElementById('recruitment-modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openTeamDetailModal(teamId) {
+            const team = teamsData.find(t => t.id === teamId);
+            if (!team) return;
+
+            currentTeam = team;
+            currentImageIndex = 0;
+
+            const modal = document.getElementById('team-detail-modal');
+            const content = document.getElementById('team-detail-content');
+
+            content.innerHTML = `
+                <!-- Images Carousel -->
+                ${team.images.length > 0 ? `
+                    <div class="image-carousel mb-6">
+                        ${team.images.map((img, index) => `
+                            <img src="${img}" alt="${team.title} 이미지 ${index + 1}" class="carousel-image ${index === 0 ? 'active' : ''}">
+                        `).join('')}
+                        ${team.images.length > 1 ? `
+                            <button class="carousel-controls carousel-prev" onclick="changeImage(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-controls carousel-next" onclick="changeImage(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                ` : ''}
+
+                <!-- Project Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-info-circle text-blue-400 mr-2"></i>기본 정보
+                        </h4>
+                        <div class="space-y-3 text-sm text-gray-300">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">상태:</span>
+                                <span class="status-badge ${team.status === '모집중' ? 'status-recruiting' : 'status-closed'}">${team.status}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">카테고리:</span>
+                                <span>${team.category}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">진행 기간:</span>
+                                <span>${team.period}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">지원 마감:</span>
+                                <span class="${new Date(team.deadline) < new Date() ? 'text-red-400' : 'text-yellow-400'}">${team.deadline}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">진행 방식:</span>
+                                <span>${team.location}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-user-crown text-yellow-400 mr-2"></i>팀 리더
+                        </h4>
+                        <div class="flex items-center p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                            <div class="relative">
+                                <img src="${team.leader.avatar}" alt="${team.leader.name}" class="w-12 h-12 rounded-full border-2 border-accent-blue">
+                                <div class="leader-badge" style="bottom: -2px; right: -2px; width: 20px; height: 20px;">
+                                    <i class="fas fa-crown text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="font-semibold text-white">${team.leader.name}</div>
+                                <div class="text-sm text-gray-400">${team.leader.role}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-file-alt text-green-400 mr-2"></i>프로젝트 상세 설명
+                    </h4>
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                        <p class="text-gray-300 whitespace-pre-line">${team.fullDescription}</p>
+                    </div>
+                </div>
+
+                <!-- Needed Roles -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-user-plus text-red-400 mr-2"></i>모집 중인 역할
+                    </h4>
+                    <div class="bg-red-900 bg-opacity-20 border border-red-800 rounded-lg p-4">
+                        <p class="text-red-300">${team.neededRoles}</p>
+                    </div>
+                </div>
+
+                <!-- Tech Stack -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-code text-blue-400 mr-2"></i>기술 스택
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        ${team.techStack.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                    </div>
+                </div>
+
+                <!-- Goals & Benefits -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-target text-green-400 mr-2"></i>프로젝트 목표
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-1">
+                            ${team.goals.map(goal => `<li>${goal}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-gift text-yellow-400 mr-2"></i>참여 혜택
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-1">
+                            ${team.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Selection Process -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-clipboard-check text-indigo-400 mr-2"></i>선발 과정
+                    </h4>
+                    <div class="bg-indigo-900 bg-opacity-20 border border-indigo-800 rounded-lg p-4">
+                        <p class="text-indigo-300">${team.selectionProcess}</p>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                ${team.links.length > 0 ? `
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-link text-pink-400 mr-2"></i>관련 링크
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${team.links.map(link => `
+                                <a href="${link}" target="_blank" class="flex items-center px-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg text-blue-400 hover:text-blue-300 text-sm">
+                                    <i class="fas fa-external-link-alt mr-2"></i>${link}
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Contact -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-envelope text-green-400 mr-2"></i>연락처
+                    </h4>
+                    <div class="bg-green-900 bg-opacity-20 border border-green-800 rounded-lg p-4">
+                        <p class="text-green-300">${team.contact}</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-4">
+                    <button onclick="closeTeamDetailModal()" class="px-6 py-2 border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">
+                        닫기
+                    </button>
+                    ${team.status === '모집중' && new Date(team.deadline) >= new Date() ? `
+                        <button onclick="applyToTeam(${team.id})" class="cta-button px-6 py-2 rounded-lg font-medium text-white">
+                            <i class="fas fa-paper-plane mr-2"></i>지원하기
+                        </button>
+                    ` : `
+                        <button disabled class="bg-gray-700 text-gray-500 cursor-not-allowed px-6 py-2 rounded-lg font-medium">
+                            지원 불가
+                        </button>
+                    `}
+                </div>
+            `;
+
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTeamDetailModal() {
+            document.getElementById('team-detail-modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Carousel functions
+        function changeImage(direction) {
+            if (!currentTeam || currentTeam.images.length <= 1) return;
+
+            const images = document.querySelectorAll('.carousel-image');
+            images[currentImageIndex].classList.remove('active');
+
+            currentImageIndex = (currentImageIndex + direction + currentTeam.images.length) % currentTeam.images.length;
+            images[currentImageIndex].classList.add('active');
+        }
+
+        // Form submission
+        async function handleRecruitmentFormSubmit() {
+            try {
+                // 제출 버튼 잠금(중복 제출 방지)
+                const submitBtn = document.querySelector('#recruitment-form [type="submit"]') || null;
+                submitBtn && (submitBtn.disabled = true);
+
+                // 1) 서버에 이미지 업로드
+                const uploadedUrls = await uploadImagesToServer(); // []
+
+                // 2) 역할 요약 수집 (동적 UI 사용 중이라고 가정)
+                const rolesArr = getRolesFromForm(); // [{role, count}, ...]
+                const neededRolesSummary = rolesToSummary(rolesArr);
+
+                if (rolesArr.length === 0) {
+                alert('최소 1개 이상의 역할을 추가해 주세요.');
+                submitBtn && (submitBtn.disabled = false);
+                return;
+                }
+
+                // 3) 나머지 필드
+                const title = document.getElementById('project-title').value;
+                const category = document.getElementById('project-category').value;
+                const period = document.getElementById('project-period').value;
+                const deadline = document.getElementById('application-deadline').value;
+                const desc = document.getElementById('project-description').value;
+
+                const newTeam = {
+                id: teamsData.length + 1,
+                title,
+                category,
+                leader: { name: "현재 사용자", avatar: "https://via.placeholder.com/40/A8C5E6/FFFFFF?text=U", role: "팀 리더" },
+                status: "모집중",
+                period,
+                deadline,
+                description: desc,
+                fullDescription: desc,
+                neededRoles: neededRolesSummary,
+                participants: [{
+                    name: "현재 사용자",
+                    role: "팀 리더",
+                    avatar: "https://via.placeholder.com/40/A8C5E6/FFFFFF?text=U"
+                }],
+                techStack: document.getElementById('tech-stack').value.split(',').map(s => s.trim()).filter(Boolean),
+                tags: document.getElementById('project-tags').value.split(',').map(s => s.trim()).filter(Boolean),
+                // 업로드 결과 URL들(없으면 빈 배열)
+                images: uploadedUrls,
+                links: document.getElementById('project-links').value.split(',').map(s => s.trim()).filter(Boolean),
+                location: document.getElementById('project-location').value,
+                selectionProcess: document.getElementById('selection-process').value,
+                contact: document.getElementById('contact-info').value,
+                goals: ["프로젝트 완성", "팀워크 향상", "실무 경험"],
+                benefits: ["실무 경험", "포트폴리오", "네트워킹"]
+                };
+
+                teamsData.unshift(newTeam);
+                renderTeamCards();
+                closeRecruitmentModal();
+
+                document.getElementById('recruitment-form').reset();
+                alert('팀 모집이 성공적으로 등록되었습니다!');
+            } catch (err) {
+                console.error(err);
+                alert(err.message || '제출 중 오류가 발생했습니다.');
+            } finally {
+                const submitBtn = document.querySelector('#recruitment-form [type="submit"]') || null;
+                submitBtn && (submitBtn.disabled = false);
+            }
+        }
+    </script>
+</body>
+</html>

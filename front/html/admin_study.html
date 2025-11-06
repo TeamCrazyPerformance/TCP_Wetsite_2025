@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP Admin - Study Management | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(168, 197, 230, 0.2);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(168, 197, 230, 0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            background: rgba(168, 197, 230, 0.1);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-warning:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-ongoing {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+        }
+        .status-completed {
+            background: linear-gradient(135deg, var(--accent-green), #10b981);
+            color: #ffffff;
+        }
+        .status-inactive {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+        .category-ai {
+            background: rgba(168, 197, 230, 0.2);
+            color: var(--accent-blue);
+        }
+        .category-web {
+            background: rgba(168, 230, 197, 0.2);
+            color: var(--accent-green);
+        }
+        .category-algorithm {
+            background: rgba(197, 168, 230, 0.2);
+            color: var(--accent-purple);
+        }
+        .category-mobile {
+            background: rgba(230, 168, 197, 0.2);
+            color: var(--accent-pink);
+        }
+        .category-data {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .table-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .table-row:hover {
+            background: rgba(168, 197, 230, 0.05);
+        }
+        .sort-header {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+        .sort-header:hover {
+            color: var(--accent-blue);
+        }
+        .search-filter-card {
+            background: linear-gradient(135deg, var(--light-gray), var(--secondary-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .participant-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex h-screen">
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Dashboard</h3>
+                    <a href="admin.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">Overview</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Page Management</h3>
+                    <a href="admin_main.html" class="sidebar-link"><i class="fas fa-file-alt"></i><span class="ml-2">Main Page</span></a>
+                    <a href="admin_recruitment.html" class="sidebar-link"><i class="fas fa-bullhorn"></i><span class="ml-2">Recruitment Page</span></a>
+                    <a href="admin_announcement.html" class="sidebar-link"><i class="fas fa-newspaper"></i><span class="ml-2">Announcement Page</span></a>
+                    <a href="admin_study.html" class="sidebar-link bg-gray-700 text-white"><i class="fas fa-book"></i><span class="ml-2">Study Group Page</span></a>
+                    <a href="admin_team.html" class="sidebar-link"><i class="fas fa-users"></i><span class="ml-2">Project Team Page</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Management</h3>
+                    <a href="admin_permission.html" class="sidebar-link"><i class="fas fa-user-shield"></i><span class="ml-2">Manage Permissions</span></a>
+                    <a href="admin_deletaccount.html" class="sidebar-link"><i class="fas fa-user-slash"></i><span class="ml-2">Delete Accounts</span></a>
+                    <a href="#" class="sidebar-link"><i class="fas fa-database"></i><span class="ml-2">Modify Information</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Application Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-user-plus"></i><span class="ml-2">New Member Applications</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Web Server Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-server"></i><span class="ml-2">Server Tools</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="orbitron text-2xl font-bold text-white hidden md:block">Study Management</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <!-- Statistics Dashboard -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">스터디 현황 대시보드</h3>
+                            <a href="study_create.html" class="btn-primary">
+                                <i class="fas fa-plus mr-2"></i>새 스터디 생성
+                            </a>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="font-bold text-lg mb-4 text-blue-300">전체 스터디</h4>
+                                <div class="text-4xl font-black gradient-text mb-4" id="totalStudies">13</div>
+                                <ul class="text-sm text-gray-300 space-y-2">
+                                    <li class="flex justify-between"><span>진행중</span><span class="font-semibold text-blue-400" id="ongoingCount">4</span></li>
+                                    <li class="flex justify-between"><span>완료</span><span class="font-semibold text-green-400" id="completedCount">9</span></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="font-bold text-lg mb-4 text-purple-300">활동 참여자</h4>
+                                <div class="text-4xl font-black gradient-text mb-4" id="totalParticipants">47</div>
+                                <ul class="text-sm text-gray-300 space-y-2">
+                                    <li class="flex justify-between"><span>진행중 참여</span><span class="font-semibold text-white" id="activeParticipants">28</span></li>
+                                    <li class="flex justify-between"><span>참여율</span><span class="font-semibold text-white" id="participationRate">76%</span></li>
+                                </ul>
+                            </div>
+
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="font-bold text-lg mb-4 text-pink-300">최근 활동</h4>
+                                <div class="space-y-3">
+                                    <div class="text-sm">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <i class="fas fa-plus text-green-400"></i>
+                                            <span class="text-gray-300">신규 스터디</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500">2개 (이번 달)</div>
+                                    </div>
+                                    <div class="text-sm">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <i class="fas fa-graduation-cap text-blue-400"></i>
+                                            <span class="text-gray-300">완료된 스터디</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500">1개 (이번 달)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="font-bold text-lg mb-4 text-yellow-300">스터디 분포</h4>
+                                <div class="chart-container" style="height: 150px;">
+                                    <canvas id="studyDistributionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Search and Filter -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">스터디 검색 및 필터</h3>
+                        </div>
+                        <div class="search-filter-card p-6 rounded-xl">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">제목 검색</label>
+                                    <div class="flex items-center gap-2">
+                                        <div class="relative flex-1">
+                                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                            <input 
+                                                type="text" 
+                                                id="searchInput" 
+                                                class="form-input pl-10" 
+                                                placeholder="스터디 제목 검색..."
+                                            >
+                                        </div>
+                                        <button
+                                            id="searchBtn"
+                                            type="button"
+                                            class="btn-secondary shrink-0 whitespace-nowrap px-4 py-2"
+                                            title="검색 (Enter)"
+                                            >
+                                            <i class="fas fa-search mr-2"></i>검색
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">분야</label>
+                                    <select id="categoryFilter" class="form-input">
+                                        <option value="">전체 분야</option>
+                                        <option value="ai">AI/ML</option>
+                                        <option value="web">웹 개발</option>
+                                        <option value="algorithm">알고리즘</option>
+                                        <option value="mobile">모바일</option>
+                                        <option value="data">데이터</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">상태</label>
+                                    <select id="statusFilter" class="form-input">
+                                        <option value="">전체 상태</option>
+                                        <option value="ongoing">진행중</option>
+                                        <option value="completed">완료</option>
+                                        <option value="inactive">비활성</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">연도</label>
+                                    <select id="yearFilter" class="form-input">
+                                        <option value="">전체 연도</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2021">2021</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Bulk Actions -->
+                    <section class="mb-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" id="selectAll" class="form-checkbox">
+                                    <span class="text-sm text-gray-300">전체 선택</span>
+                                </label>
+                                <span class="text-sm text-gray-400" id="selectedCount">0개 선택됨</span>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2" id="bulkActions" style="display: none;">
+                                <button class="btn-success text-sm" onclick="bulkActivate()">
+                                    <i class="fas fa-play mr-1"></i>활성화
+                                </button>
+                                <button class="btn-warning text-sm" onclick="bulkDeactivate()">
+                                    <i class="fas fa-pause mr-1"></i>비활성화
+                                </button>
+                                <button class="btn-danger text-sm" onclick="bulkDelete()">
+                                    <i class="fas fa-trash mr-1"></i>삭제
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Studies Table -->
+                    <section class="mb-8">
+                        <div class="widget-card rounded-xl overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800">
+                                        <tr>
+                                            <th class="p-4 text-left">
+                                                <div class="flex items-center">
+                                                    <input type="checkbox" id="headerCheckbox" class="form-checkbox">
+                                                </div>
+                                            </th>
+                                            <th class="p-4 text-left sort-header" onclick="sortTable('title')">
+                                                <div class="flex items-center">
+                                                    제목
+                                                    <i class="fas fa-sort ml-2 text-gray-400"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-4 text-left sort-header" onclick="sortTable('leader')">
+                                                <div class="flex items-center">
+                                                    리더
+                                                    <i class="fas fa-sort ml-2 text-gray-400"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-4 text-left sort-header" onclick="sortTable('period')">
+                                                <div class="flex items-center">
+                                                    기간
+                                                    <i class="fas fa-sort ml-2 text-gray-400"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-4 text-left sort-header" onclick="sortTable('participants')">
+                                                <div class="flex items-center">
+                                                    참여자
+                                                    <i class="fas fa-sort ml-2 text-gray-400"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-4 text-left">상태</th>
+                                            <th class="p-4 text-left">작업</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studiesTable">
+                                        <!-- Study rows will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Pagination -->
+                    <section class="flex justify-center">
+                        <div class="flex items-center space-x-2" id="pagination">
+                            <button class="px-3 py-2 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors" onclick="previousPage()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="px-4 py-2 rounded-lg bg-purple-600 text-white font-bold">1</span>
+                            <span class="px-4 py-2 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors cursor-pointer">2</span>
+                            <span class="px-4 py-2 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors cursor-pointer">3</span>
+                            <button class="px-3 py-2 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors" onclick="nextPage()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample study data
+        let studies = [
+            {
+                id: 1,
+                title: 'Generative AI 프로젝트 스터디',
+                leader: '김AI',
+                period: '2025.05 - 2025.09',
+                participants: ['김AI', '이데이터', '박머신', '최딥러닝', '정텐서', '한파이토치', '조트랜스'],
+                status: 'ongoing',
+                category: 'ai',
+                year: 2025,
+                techstack: ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face'],
+                description: 'LLM과 Diffusion Model을 활용한 생성형 AI 학습과 프로젝트 진행'
+            },
+            {
+                id: 2,
+                title: 'React 심화 스터디',
+                leader: '박웹개발',
+                period: '2025.03 - 2025.07',
+                participants: ['박웹개발', '김리액트', '이타입스크립트', '최넥스트', '정훅스', '한컴포넌트'],
+                status: 'ongoing',
+                category: 'web',
+                year: 2025,
+                techstack: ['React', 'TypeScript', 'Next.js', 'Redux'],
+                description: 'React의 고급 패턴과 성능 최적화를 학습하는 심화 스터디'
+            },
+            {
+                id: 3,
+                title: 'Kubernetes & DevOps',
+                leader: '이데브옵스',
+                period: '2025.04 - 2025.08',
+                participants: ['이데브옵스', '김도커', '박쿠버네티스', '최AWS', '정CI'],
+                status: 'ongoing',
+                category: 'web',
+                year: 2025,
+                techstack: ['Kubernetes', 'Docker', 'CI/CD', 'AWS'],
+                description: '현대적인 DevOps 환경 구축과 Kubernetes 운영 학습'
+            },
+            {
+                id: 4,
+                title: '알고리즘 & 자료구조',
+                leader: '최알고리즘',
+                period: '2025.03 - 2025.06',
+                participants: ['최알고리즘', '김코딩테스트', '이자료구조', '박동적계획법', '정그래프', '한트리', '조정렬', '윤탐색'],
+                status: 'ongoing',
+                category: 'algorithm',
+                year: 2025,
+                techstack: ['Python', 'C++', 'Java'],
+                description: '코딩 테스트 대비와 알고리즘 실력 향상을 위한 스터디'
+            },
+            {
+                id: 5,
+                title: 'Spring Boot 백엔드',
+                leader: '김스프링',
+                period: '2024.09 - 2024.12',
+                participants: ['김스프링', '이자바', '박JPA', '최MySQL', '정API', '한시큐리티', '조테스트'],
+                status: 'completed',
+                category: 'web',
+                year: 2024,
+                techstack: ['Spring Boot', 'Java', 'MySQL', 'JPA'],
+                description: 'Spring Boot를 활용한 백엔드 개발 전반 학습'
+            },
+            {
+                id: 6,
+                title: '데이터 사이언스 기초',
+                leader: '박데이터',
+                period: '2024.03 - 2024.06',
+                participants: ['박데이터', '김판다스', '이넘파이', '최시각화', '정통계', '한분석', '조인사이트', '윤예측', '서머신러닝', '류딥러닝'],
+                status: 'completed',
+                category: 'data',
+                year: 2024,
+                techstack: ['Python', 'Pandas', 'NumPy', 'Matplotlib'],
+                description: '파이썬을 활용한 데이터 분석과 시각화 기초 학습'
+            },
+            {
+                id: 7,
+                title: 'iOS 앱 개발 (Swift)',
+                leader: '이iOS',
+                period: '2024.09 - 2024.12',
+                participants: ['이iOS', '김스위프트', '박UIKit', '최SwiftUI', '정Xcode', '한앱스토어'],
+                status: 'completed',
+                category: 'mobile',
+                year: 2024,
+                techstack: ['Swift', 'UIKit', 'SwiftUI'],
+                description: 'Swift를 활용한 Apple 생태계 iOS 앱 개발 학습'
+            },
+            {
+                id: 8,
+                title: 'Unity 3D 게임 개발',
+                leader: '최게임',
+                period: '2023.09 - 2023.12',
+                participants: ['최게임', '김유니티', '박3D', '정C샵', '한물리엔진'],
+                status: 'completed',
+                category: 'mobile',
+                year: 2023,
+                techstack: ['Unity', 'C#'],
+                description: 'Unity 엔진을 활용한 3D 게임 개발 학습'
+            },
+            {
+                id: 9,
+                title: '자바 프로그래밍',
+                leader: '김자바',
+                period: '2022.03 - 2022.06',
+                participants: ['김자바', '이객체지향', '박상속', '최인터페이스', '정제네릭', '한스트림', '조람다', '윤컬렉션', '서스레드', '류예외처리', '노애노테이션', '도리플렉션', '마IO', '바정규표현식', '사네트워킹'],
+                status: 'completed',
+                category: 'web',
+                year: 2022,
+                techstack: ['Java'],
+                description: '프로그래밍 기초부터 Java 객체지향 프로그래밍까지 완전 정복'
+            },
+            {
+                id: 10,
+                title: '데이터베이스 & SQL',
+                leader: '박DB',
+                period: '2022.09 - 2022.12',
+                participants: ['박DB', '김MySQL', '이PostgreSQL', '최정규화', '정인덱스', '한트랜잭션', '조쿼리최적화', '윤백업복구', '서저장프로시저', '류뷰'],
+                status: 'completed',
+                category: 'data',
+                year: 2022,
+                techstack: ['MySQL', 'PostgreSQL', 'SQL'],
+                description: '데이터베이스 설계부터 고급 SQL 쿼리 작성까지 학습'
+            },
+            {
+                id: 11,
+                title: 'C 프로그래밍',
+                leader: '최C언어',
+                period: '2021.09 - 2021.12',
+                participants: ['최C언어', '김포인터', '이배열', '박구조체', '정파일IO', '한메모리관리', '조함수포인터', '윤전처리기', '서비트연산', '류시스템프로그래밍', '노임베디드', '도어셈블리', '마컴파일러', '바디버깅', '사성능최적화', '아알고리즘구현', '자자료구조구현', '차네트워크프로그래밍', '카그래픽스', '타게임엔진'],
+                status: 'completed',
+                category: 'algorithm',
+                year: 2021,
+                techstack: ['C'],
+                description: 'TCP 최초 스터디로, C 언어 기초부터 시스템 프로그래밍까지 학습'
+            },
+            {
+                id: 12,
+                title: 'Next.js 풀스택 개발',
+                leader: '정넥스트',
+                period: '2025.03 - 2025.07',
+                participants: ['정넥스트', '김서버사이드', '이API라우트', '박미들웨어', '최배포', '한SEO'],
+                status: 'ongoing',
+                category: 'web',
+                year: 2025,
+                techstack: ['Next.js', 'TypeScript', 'NestJS', 'MongoDB'],
+                description: 'Next.js를 활용한 풀스택 웹 애플리케이션 개발 마스터 과정'
+            },
+            {
+                id: 13,
+                title: '머신러닝 딥다이브',
+                leader: '한머신러닝',
+                period: '2024.03 - 2024.08',
+                participants: ['한머신러닝', '김사이킷런', '이신경망', '박딥러닝', '최CNN', '정RNN', '조GAN', '윤강화학습', '서자연어처리'],
+                status: 'completed',
+                category: 'ai',
+                year: 2024,
+                techstack: ['Python', 'scikit-learn', 'TensorFlow', 'Keras'],
+                description: '머신러닝과 딥러닝의 이론부터 실무 프로젝트까지 완벽 학습'
+            }
+        ];
+
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let selectedItems = new Set();
+        let sortBy = 'period';
+        let sortOrder = 'desc';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            setupEventListeners();
+            renderTable();
+            updateStatistics();
+            setupChart();
+        });
+
+        function initializePage() {
+            // Mobile sidebar toggle
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        function setupEventListeners() {
+            // Search and filter
+            document.getElementById('searchInput').addEventListener('input', filterStudies);
+            document.getElementById('categoryFilter').addEventListener('change', filterStudies);
+            document.getElementById('statusFilter').addEventListener('change', filterStudies);
+            document.getElementById('yearFilter').addEventListener('change', filterStudies);
+
+            // Select all checkbox
+            document.getElementById('selectAll').addEventListener('change', toggleSelectAll);
+            const headerCb = document.getElementById('headerCheckbox');
+            if (headerCb) {
+                headerCb.addEventListener('change', toggleSelectAll);
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('studiesTable');
+            tbody.innerHTML = '';
+
+            studies.forEach(study => {
+                const row = createTableRow(study);
+                tbody.appendChild(row);
+            });
+
+            updateSelectedCount();
+        }
+
+        function createTableRow(study) {
+            const row = document.createElement('tr');
+            row.className = 'table-row';
+            
+            const categoryClass = `category-${study.category}`;
+            const statusClass = `status-${study.status}`;
+            
+            const categoryNames = {
+                ai: 'AI/ML',
+                web: '웹 개발',
+                algorithm: '알고리즘',
+                mobile: '모바일',
+                data: '데이터'
+            };
+            
+            const statusNames = {
+                ongoing: '진행중',
+                completed: '완료',
+                inactive: '비활성'
+            };
+
+            // Create participant avatars
+            const participantAvatars = study.participants.slice(0, 5).map(name => 
+                `<span class="participant-avatar">${name.charAt(0)}</span>`
+            ).join('');
+            const moreCount = study.participants.length > 5 ? `+${study.participants.length - 5}` : '';
+
+            row.innerHTML = `
+                <td class="p-4">
+                    <input type="checkbox" class="item-checkbox" data-id="${study.id}">
+                </td>
+                <td class="p-4">
+                    <div class="font-semibold text-white cursor-pointer hover:text-blue-300" onclick="viewStudy(${study.id})">
+                        ${study.title}
+                    </div>
+                    <div class="text-sm text-gray-400">리더: ${study.leader}</div>
+                    <div class="mt-1">
+                        <span class="status-badge ${categoryClass}">${categoryNames[study.category]}</span>
+                    </div>
+                </td>
+                <td class="p-4">
+                    <div class="text-white font-medium">${study.leader}</div>
+                    <div class="text-sm text-gray-400">${study.techstack.slice(0, 2).join(', ')}</div>
+                </td>
+                <td class="p-4 text-gray-300">${study.period}</td>
+                <td class="p-4">
+                    <div class="flex items-center">
+                        ${participantAvatars}
+                        ${moreCount ? `<span class="text-xs text-gray-400 ml-1">${moreCount}</span>` : ''}
+                    </div>
+                    <div class="text-sm text-gray-400 mt-1">${study.participants.length}명</div>
+                </td>
+                <td class="p-4">
+                    <span class="status-badge ${statusClass}">${statusNames[study.status]}</span>
+                </td>
+                <td class="p-4">
+                    <div class="flex space-x-2">
+                        <button class="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700" onclick="editStudy(${study.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="px-2 py-1 text-xs ${study.status === 'ongoing' ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded" onclick="toggleStatus(${study.id})">
+                            <i class="fas fa-${study.status === 'ongoing' ? 'pause' : 'play'}"></i>
+                        </button>
+                        <button class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700" onclick="deleteStudy(${study.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+
+            // Add event listener to checkbox
+            const checkbox = row.querySelector('.item-checkbox');
+            checkbox.addEventListener('change', handleItemCheckbox);
+
+            return row;
+        }
+
+        function handleItemCheckbox(event) {
+            const id = parseInt(event.target.dataset.id);
+            if (event.target.checked) {
+                selectedItems.add(id);
+            } else {
+                selectedItems.delete(id);
+            }
+            updateSelectedCount();
+        }
+
+        function toggleSelectAll(e) {
+            const controller = e?.target
+                || document.getElementById('selectAll')
+                || document.getElementById('headerCheckbox');
+            if (!controller) return;
+
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            selectedItems.clear();
+            checkboxes.forEach(cb => {
+                cb.checked = controller.checked;
+                if (controller.checked) selectedItems.add(parseInt(cb.dataset.id, 10));
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = selectedItems.size;
+            document.getElementById('selectedCount').textContent = `${count}개 선택됨`;
+            document.getElementById('bulkActions').style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        function filterStudies() {
+            // Implement filtering logic here
+            renderTable();
+        }
+
+        function sortTable(column) {
+            if (sortBy === column) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortBy = column;
+                sortOrder = 'desc';
+            }
+            
+            studies.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                if (column === 'period') {
+                    aVal = new Date(aVal.split(' - ')[0]);
+                    bVal = new Date(bVal.split(' - ')[0]);
+                } else if (column === 'participants') {
+                    aVal = a.participants.length;
+                    bVal = b.participants.length;
+                }
+                
+                if (sortOrder === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            renderTable();
+        }
+
+        function updateStatistics() {
+            const ongoing = studies.filter(s => s.status === 'ongoing').length;
+            const completed = studies.filter(s => s.status === 'completed').length;
+            const totalParticipants = studies.reduce((sum, s) => sum + s.participants.length, 0);
+            const activeParticipants = studies.filter(s => s.status === 'ongoing').reduce((sum, s) => sum + s.participants.length, 0);
+            const participationRate = Math.round((activeParticipants / 37) * 100); // Assuming 37 total members
+            
+            document.getElementById('totalStudies').textContent = studies.length;
+            document.getElementById('ongoingCount').textContent = ongoing;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalParticipants').textContent = totalParticipants;
+            document.getElementById('activeParticipants').textContent = activeParticipants;
+            document.getElementById('participationRate').textContent = participationRate + '%';
+        }
+
+        function setupChart() {
+            const ctx = document.getElementById('studyDistributionChart').getContext('2d');
+            
+            const categoryData = {
+                ai: studies.filter(s => s.category === 'ai').length,
+                web: studies.filter(s => s.category === 'web').length,
+                algorithm: studies.filter(s => s.category === 'algorithm').length,
+                mobile: studies.filter(s => s.category === 'mobile').length,
+                data: studies.filter(s => s.category === 'data').length
+            };
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['AI/ML', '웹 개발', '알고리즘', '모바일', '데이터'],
+                    datasets: [{
+                        data: Object.values(categoryData),
+                        backgroundColor: ['#a8c5e6', '#a8e6c5', '#c5a8e6', '#e6a8c5', '#f59e0b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                usePointStyle: true,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Action functions
+        function viewStudy(id) {
+            const study = studies.find(s => s.id === id);
+            if (study) {
+                if (study.title === 'Generative AI 프로젝트 스터디') {
+                    window.open('study_study0.html', '_blank');
+                } else {
+                    showNotification('스터디 상세 페이지로 이동합니다.', 'info');
+                }
+            }
+        }
+
+        function editStudy(id) {
+            showNotification('스터디 편집 기능을 준비 중입니다.', 'info');
+        }
+
+        function toggleStatus(id) {
+            const study = studies.find(s => s.id === id);
+            if (study) {
+                if (study.status === 'ongoing') {
+                    study.status = 'completed';
+                } else if (study.status === 'completed') {
+                    study.status = 'ongoing';
+                } else {
+                    study.status = 'ongoing';
+                }
+                renderTable();
+                updateStatistics();
+                showNotification(`스터디가 ${study.status === 'ongoing' ? '활성화' : '완료'}되었습니다.`, 'success');
+            }
+        }
+
+        function deleteStudy(id) {
+            if (confirm('정말로 이 스터디를 삭제하시겠습니까?')) {
+                studies = studies.filter(s => s.id !== id);
+                renderTable();
+                updateStatistics();
+                setupChart();
+                showNotification('스터디가 삭제되었습니다.', 'error');
+            }
+        }
+
+        // Bulk actions
+        function bulkActivate() {
+            selectedItems.forEach(id => {
+                const study = studies.find(s => s.id === id);
+                if (study) study.status = 'ongoing';
+            });
+            renderTable();
+            updateStatistics();
+            showNotification(`${selectedItems.size}개 스터디가 활성화되었습니다.`, 'success');
+            selectedItems.clear();
+            updateSelectedCount();
+        }
+
+        function bulkDeactivate() {
+            selectedItems.forEach(id => {
+                const study = studies.find(s => s.id === id);
+                if (study) study.status = 'inactive';
+            });
+            renderTable();
+            updateStatistics();
+            showNotification(`${selectedItems.size}개 스터디가 비활성화되었습니다.`, 'warning');
+            selectedItems.clear();
+            updateSelectedCount();
+        }
+
+        function bulkDelete() {
+            if (confirm(`선택된 ${selectedItems.size}개 스터디를 삭제하시겠습니까?`)) {
+                studies = studies.filter(s => !selectedItems.has(s.id));
+                renderTable();
+                updateStatistics();
+                setupChart();
+                showNotification(`${selectedItems.size}개 스터디가 삭제되었습니다.`, 'error');
+                selectedItems.clear();
+                updateSelectedCount();
+            }
+        }
+
+        // Pagination
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            currentPage++;
+            renderTable();
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-opacity ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

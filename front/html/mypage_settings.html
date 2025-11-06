@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCP - 계정 설정 | Team Crazy Performance</title>
+  <!-- CSRF 토큰이 있다면 서버에서 주입해주세요 -->
+  <meta name="csrf-token" content="" />
+  
+  <!-- Tailwind & Icons & Fonts (existing stack) -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+  <style>
+    :root {
+      --primary-black: #0a0a0a;
+      --secondary-gray: #1a1a1a;
+      --light-gray: #2a2a2a;
+      --accent-blue: #a8c5e6;
+      --accent-purple: #c5a8e6;
+      --accent-green: #a8e6c5;
+      --accent-pink: #e6a8c5;
+    }
+    body { font-family: 'Spoqa Han Sans Neo', sans-serif; background: var(--primary-black); color: #fff; }
+    .orbitron { font-family: 'Orbitron', monospace; }
+    .gradient-text { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .widget-card { background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray)); border: 1px solid rgba(255,255,255,0.1); }
+    .sidebar { width: 260px; background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black)); border-right: 1px solid rgba(255,255,255,0.1); transition: transform .3s ease-in-out; }
+    @media (max-width: 768px){ .sidebar{ transform: translateX(-100%); position: fixed; z-index: 100; height: 100%; } .sidebar.open{ transform: translateX(0); } }
+    .sidebar-link{ display:flex; align-items:center; padding:10px 16px; font-size:.875rem; color:#cbd5e1; border-radius:.5rem; transition:.2s; }
+    .sidebar-link:hover{ background-color: rgba(168,197,230,.1); color:#fff; }
+    .sidebar-link i{ width:1.5rem; text-align:center; }
+    .input{ background: transparent; border: 1px solid rgba(255,255,255,.2); border-radius:.5rem; padding:.625rem .75rem; width: 100%; color:#fff; }
+    .input:focus{ outline:none; border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(168,197,230,.3); }
+    .label{ font-size:.875rem; color:#cbd5e1; margin-bottom:.375rem; display:block; }
+    .help{ font-size:.75rem; color:#94a3b8; }
+    .error{ font-size:.75rem; color:#fca5a5; }
+    .btn-primary{ background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+    .btn-primary:hover{ filter: brightness(1.05); }
+    .btn-outline{ border:1px solid #475569; }
+
+    /* Toasts */
+    #toast-region { position: fixed; top: 1rem; right: 1rem; z-index: 2000; display: grid; gap: .5rem; }
+    .toast{ padding:.75rem 1rem; border-radius:.75rem; border:1px solid rgba(255,255,255,.1); background: #0b1220cc; backdrop-filter: blur(6px); min-width: 280px; }
+    .toast.success{ border-color: rgba(34,197,94,.3); }
+    .toast.error{ border-color: rgba(239,68,68,.3); }
+    .toast.info{ border-color: rgba(59,130,246,.3); }
+
+    /* Modal */
+    .modal{ display:none; position: fixed; inset:0; z-index: 1500; background: rgba(0,0,0,.8); backdrop-filter: blur(4px); }
+    .modal.show{ display:flex; align-items:center; justify-content:center; }
+    .modal-panel{ width: 100%; max-width: 560px; max-height: 85vh; overflow:auto; border-radius: 1rem; border:1px solid rgba(255,255,255,.1); background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray)); padding: 1.25rem; }
+
+    /* Password strength bar */
+    .strength-rail{ height: .5rem; background: #0b1220; border:1px solid rgba(255,255,255,.08); border-radius: 9999px; overflow:hidden; }
+    .strength-bar{ height: 100%; width: 0%; background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #22d3ee); transition: width .25s ease; }
+
+    /* Focus ring for keyboard */
+    :focus-visible { outline: 2px solid #8b5cf6; outline-offset: 2px; }
+  </style>
+</head>
+<body class="bg-primary-black">
+  <div id="toast-region" role="region" aria-live="assertive" aria-atomic="true"></div>
+
+  <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+          <div class="flex items-center space-x-3 mb-8 px-2">
+            <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+            <div>
+                <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                <p class="orbitron text-xs text-gray-400">My Page</p>
+            </div>
+          </div>
+
+          <nav class="space-y-4">
+              <div>
+                  <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">개인 정보</h3>
+                  <a href="mypage.html" class="sidebar-link">
+                      <i class="fas fa-user"></i><span class="ml-2">프로필 보기/수정</span>
+                  </a>
+                  <a href="mypage_memberpagesetting.html" class="sidebar-link">
+                      <i class="fas fa-eye"></i><span class="ml-2">멤버 페이지 공개 설정</span>
+                  </a>
+              </div>
+
+              <div>
+                  <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">활동 관리</h3>
+                  <a href="mypage_study.html" class="sidebar-link">
+                      <i class="fas fa-book"></i><span class="ml-2">참여 스터디 목록</span>
+                  </a>
+                  <a href="mypage_team.html" class="sidebar-link active">
+                      <i class="fas fa-users"></i><span class="ml-2">팀 구성 이력</span>
+                  </a>
+              </div>
+
+              <div>
+                  <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">계정 관리</h3>
+                  <a href="mypage_settings.html" class="sidebar-link">
+                      <i class="fas fa-cog"></i><span class="ml-2">개인정보 수정</span>
+                  </a>
+                  <a href="mypage_withdraw.html" class="sidebar-link text-red-400">
+                      <i class="fas fa-sign-out-alt"></i><span class="ml-2">탈퇴 신청</span>
+                  </a>
+              </div>
+
+              <div class="pt-4 border-t border-gray-700">
+                  <a href="index.html" class="sidebar-link">
+                      <i class="fas fa-home"></i><span class="ml-2">메인 페이지로</span>
+                  </a>
+              </div>
+          </nav>
+      </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="container mx-auto px-4">
+          <div class="flex items-center justify-between h-16">
+            <button id="sidebar-toggle" class="md:hidden text-white" aria-label="사이드바 열기"><i class="fas fa-bars text-xl"></i></button>
+            <h2 class="text-2xl font-bold text-white hidden md:block">계정 설정</h2>
+            
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                <div class="flex items-center space-x-2">
+                    <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                    <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                </div>
+                <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+        <div class="container mx-auto max-w-4xl">
+          <h3 class="text-2xl font-bold gradient-text mb-6">계정 정보 수정</h3>
+
+          <!-- Carded Form -->
+          <form id="settings-form" class="widget-card rounded-xl p-6" novalidate>
+            <!-- Profile Section -->
+            <section aria-labelledby="sec-profile">
+              <div class="flex items-center justify-between mb-4">
+                <h4 id="sec-profile" class="text-lg font-bold">프로필</h4>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label for="name" class="label">이름</label>
+                  <input id="name" name="name" type="text" class="input" autocomplete="name" aria-describedby="err-name" minlength="2" maxlength="30" required />
+                  <p id="err-name" class="error mt-1 hidden"></p>
+                </div>
+                <div>
+                  <label for="birthday" class="label">생일</label>
+                  <input id="birthday" name="birthday" type="date" class="input" aria-describedby="err-birthday" required />
+                  <p id="err-birthday" class="error mt-1 hidden"></p>
+                </div>
+              </div>
+            </section>
+
+            <hr class="my-6 border-gray-700" />
+
+            <!-- Contacts Section -->
+            <section aria-labelledby="sec-contacts">
+              <h4 id="sec-contacts" class="text-lg font-bold mb-4">연락처</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label for="phone" class="label">휴대전화 (010-XXXX-XXXX 또는 숫자만)</label>
+                  <input id="phone" name="phone" type="tel" inputmode="numeric" class="input" aria-describedby="err-phone help-phone" placeholder="010-1234-5678" required />
+                  <p id="help-phone" class="help mt-1">입력 시 자동 포맷팅됩니다.</p>
+                  <p id="err-phone" class="error mt-1 hidden"></p>
+                </div>
+                <div>
+                  <label for="email" class="label">이메일</label>
+                  <input id="email" name="email" type="email" class="input" autocomplete="email" aria-describedby="err-email" required />
+                  <p id="err-email" class="error mt-1 hidden"></p>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button id="btn-open-password" type="button" class="px-4 py-2 rounded-lg btn-outline hover:bg-gray-800" aria-haspopup="dialog" aria-controls="password-modal">
+                  <i class="fa-solid fa-key mr-2"></i>Change password
+                </button>
+              </div>
+            </section>
+
+            <hr class="my-6 border-gray-700" />
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-3">
+              <button id="btn-save" type="submit" class="px-5 py-2 rounded-lg btn-primary disabled:opacity-50" disabled>저장</button>
+            </div>
+          </form>
+
+          <!-- Sample states hint -->
+          <p class="text-xs text-gray-500 mt-3">테스트 팁: 이메일에 <code>taken</code> 문자열 포함 → 409 충돌, 비밀번호 변경 시 인증코드 <code>123456</code> 사용.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Password Change Modal -->
+  <div id="password-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+    <div class="modal-panel" role="document">
+      <div class="flex items-center justify-between mb-2">
+        <h3 id="pw-title" class="text-xl font-bold">비밀번호 변경</h3>
+        <button id="pw-close" class="text-gray-400 hover:text-white text-2xl" aria-label="닫기"><i class="fas fa-times"></i></button>
+      </div>
+      <p class="text-sm text-gray-400 mb-4">아래 순서대로 입력 후 변경을 완료하세요.</p>
+
+      <form id="password-form" novalidate>
+        <div class="space-y-4">
+          <!-- Step 1: Current -->
+          <div>
+            <label for="pw-current" class="label">현재 비밀번호</label>
+            <div class="relative">
+              <input id="pw-current" type="password" class="input pr-10" autocomplete="current-password" aria-describedby="err-pw-current" required />
+              <button type="button" class="absolute inset-y-0 right-2 my-auto" aria-label="비밀번호 표시" data-toggle="pw-current"><i class="fa-regular fa-eye"></i></button>
+            </div>
+            <p id="err-pw-current" class="error mt-1 hidden"></p>
+          </div>
+
+          <!-- Step 2/3: New + Confirm -->
+          <div>
+            <label for="pw-new" class="label">새 비밀번호</label>
+            <div class="relative">
+              <input id="pw-new" type="password" class="input pr-10" autocomplete="new-password" aria-describedby="help-pw strength-text err-pw-new" required />
+              <button type="button" class="absolute inset-y-0 right-2 my-auto" aria-label="비밀번호 표시" data-toggle="pw-new"><i class="fa-regular fa-eye"></i></button>
+            </div>
+            <p id="help-pw" class="help mt-1">10자 이상, 대/소문자/숫자/특수문자 중 3가지 이상 조합.</p>
+            <p id="err-pw-new" class="error mt-1 hidden"></p>
+          </div>
+          <div>
+            <label for="pw-confirm" class="label">새 비밀번호 확인</label>
+            <div class="relative">
+              <input id="pw-confirm" type="password" class="input pr-10" autocomplete="new-password" aria-describedby="err-pw-confirm" required />
+              <button type="button" class="absolute inset-y-0 right-2 my-auto" aria-label="비밀번호 표시" data-toggle="pw-confirm"><i class="fa-regular fa-eye"></i></button>
+            </div>
+            <p id="err-pw-confirm" class="error mt-1 hidden"></p>
+          </div>
+
+          <!-- Step 4: Code -->
+          <div>
+            <div class="flex items-end gap-3">
+              <div class="flex-1">
+                <label for="pw-code" class="label">인증 코드</label>
+                <input id="pw-code" type="text" inputmode="numeric" class="input" maxlength="6" aria-describedby="err-pw-code help-code" placeholder="6자리" required />
+                <p id="help-code" class="help mt-1">이메일로 전송된 6자리 코드를 입력하세요.</p>
+                <p id="err-pw-code" class="error mt-1 hidden"></p>
+              </div>
+              <div class="pb-1">
+                <button id="btn-send-code" type="button" class="px-3 py-2 rounded-lg btn-outline hover:bg-gray-800">코드 전송</button>
+                <p id="resend-countdown" class="text-xs text-gray-400 mt-1 h-5"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 mt-6">
+          <button type="button" class="px-4 py-2 rounded-lg btn-outline hover:bg-gray-800" id="pw-cancel">취소</button>
+          <button type="submit" class="px-4 py-2 rounded-lg btn-primary" id="pw-submit">변경</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ============================
+    // Config
+    // ============================
+    const USE_MOCK_API = true; // 실제 API 연결 시 false로 전환
+    const API = {
+      me: '/api/me',
+      updateMe: '/api/me',
+      sendCode: '/api/auth/send-code',
+      changePassword: '/api/auth/change-password'
+    };
+
+    // CSRF & fetch helper
+    function getCSRF(){ return document.querySelector('meta[name="csrf-token"]').content || ''; }
+    async function apiFetch(url, options={}){
+      const opts = {
+        method: options.method || 'GET',
+        headers: Object.assign({ 'Content-Type': 'application/json', 'X-CSRF-Token': getCSRF() }, options.headers || {}),
+        credentials: 'include',
+      };
+      if(options.body) opts.body = JSON.stringify(options.body);
+      if(USE_MOCK_API) return mockFetch(url, opts); // mock path
+      return fetch(url, opts);
+    }
+
+    // ============================
+    // Mock API (for testing)
+    // ============================
+    function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+    async function mockFetch(url, opts){
+      await sleep(600);
+      const make = (status, json) => ({ ok: status>=200 && status<300, status, json: async()=>json });
+      try{
+        if(url === API.me && (!opts.method || opts.method==='GET')){
+          return make(200, { name: 'Admin Kim', birthday: '2002-03-01', phone: '010-1234-5678', email: 'kimtcp@seoultech.ac.kr' });
+        }
+        if(url === API.updateMe && opts.method==='PUT'){
+          const { email } = JSON.parse(opts.body||'{}');
+          if(String(email||'').includes('taken')) return make(409, { field: 'email', message: '이미 사용 중인 이메일입니다.' });
+          // 401 시뮬레이션: email에 unauth 포함
+          if(String(email||'').includes('unauth')) return make(401, { message: '인증이 필요합니다.' });
+          // 400 시뮬레이션: 이름 길이 오류
+          const { name } = JSON.parse(opts.body||'{}');
+          if(name && name.length < 2) return make(400, { field: 'name', message: '이름은 2자 이상이어야 합니다.' });
+          return make(200, { success: true });
+        }
+        if(url === API.sendCode && opts.method==='POST'){
+          return make(200, { success: true });
+        }
+        if(url === API.changePassword && opts.method==='POST'){
+          const { currentPassword, newPassword, code } = JSON.parse(opts.body||'{}');
+          if(currentPassword === 'wrong') return make(401, { field: 'current', message: '현재 비밀번호가 올바르지 않습니다.' });
+          if(code !== '123456') return make(400, { field: 'code', message: '인증 코드가 올바르지 않습니다.' });
+          if(newPassword && newPassword.length < 10) return make(400, { field: 'new', message: '비밀번호 정책을 확인하세요.' });
+          return make(200, { success: true });
+        }
+      }catch(e){/* ignore */}
+      return make(500, { message: 'Mock: 알 수 없는 요청' });
+    }
+
+    // ============================
+    // DOM refs
+    // ============================
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    sidebarToggle?.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+    const form = document.getElementById('settings-form');
+    const btnSave = document.getElementById('btn-save');
+
+    const nameEl = document.getElementById('name');
+    const birthdayEl = document.getElementById('birthday');
+    const phoneEl = document.getElementById('phone');
+    const emailEl = document.getElementById('email');
+
+    const errName = document.getElementById('err-name');
+    const errBirthday = document.getElementById('err-birthday');
+    const errPhone = document.getElementById('err-phone');
+    const errEmail = document.getElementById('err-email');
+
+    const toastRegion = document.getElementById('toast-region');
+
+    // Modal refs
+    const pwModal = document.getElementById('password-modal');
+    const pwOpen = document.getElementById('btn-open-password');
+    const pwClose = document.getElementById('pw-close');
+    const pwCancel = document.getElementById('pw-cancel');
+    const pwForm = document.getElementById('password-form');
+
+    const pwCurrent = document.getElementById('pw-current');
+    const pwNew = document.getElementById('pw-new');
+    const pwConfirm = document.getElementById('pw-confirm');
+    const pwCode = document.getElementById('pw-code');
+    const errPwCurrent = document.getElementById('err-pw-current');
+    const errPwNew = document.getElementById('err-pw-new');
+    const errPwConfirm = document.getElementById('err-pw-confirm');
+    const errPwCode = document.getElementById('err-pw-code');
+
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+
+    const btnSendCode = document.getElementById('btn-send-code');
+    const resendCountdown = document.getElementById('resend-countdown');
+
+    // ============================
+    // Helpers: toasts, errors, validators
+    // ============================
+    function showToast(msg, type='info', timeout=3200){
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.setAttribute('role','status');
+      el.innerHTML = `<div class="flex items-start gap-3">\
+        <div class="pt-0.5">${ type==='success' ? '✅' : type==='error' ? '⚠️' : 'ℹ️' }</div>\
+        <div class="text-sm">${msg}</div>\
+        <button class="ml-auto text-gray-400 hover:text-white" aria-label="닫기">✖</button>\
+      </div>`;
+      toastRegion.appendChild(el);
+      const close = ()=>{ el.remove(); };
+      el.querySelector('button').addEventListener('click', close);
+      setTimeout(close, timeout);
+    }
+
+    function setError(el, errEl, message){
+      if(message){ errEl.textContent = message; errEl.classList.remove('hidden'); el.setAttribute('aria-invalid', 'true'); }
+      else { errEl.textContent = ''; errEl.classList.add('hidden'); el.removeAttribute('aria-invalid'); }
+    }
+
+    function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v || ''); }
+    function normalizePhoneDigits(v){ return (v||'').replace(/\D+/g,''); }
+    function formatKRPhone(v){
+      const d = normalizePhoneDigits(v);
+      if(d.startsWith('010') && d.length >= 8){
+        const mid = d.slice(3, 7);
+        const tail = d.slice(7, 11);
+        return `010-${mid}${mid.length<4?'':'-'}${tail}`.replace(/-$/, '');
+      }
+      return v; // fallback
+    }
+    function isKR010(v){
+      const d = normalizePhoneDigits(v);
+      return /^010\d{8}$/.test(d);
+    }
+    function isPastDate(yyyyMMdd){
+      if(!yyyyMMdd) return false;
+      const today = new Date(); today.setHours(0,0,0,0);
+      const dt = new Date(yyyyMMdd);
+      return dt instanceof Date && !isNaN(+dt) && dt < today;
+    }
+
+    function passwordScore(pw){
+      if(!pw) return 0;
+      let score = 0;
+      const lenOK = pw.length >= 10;
+      const upper = /[A-Z]/.test(pw);
+      const lower = /[a-z]/.test(pw);
+      const digit = /\d/.test(pw);
+      const special = /[^A-Za-z0-9]/.test(pw);
+      const cats = [upper, lower, digit, special].filter(Boolean).length;
+      if(lenOK) score += 1;
+      score += Math.max(0, cats - 1); // 0~3
+      // score 0..4
+      return Math.min(4, score);
+    }
+    function updateStrengthUI(){
+      const pw = pwNew.value;
+      const sc = passwordScore(pw);
+      strengthBar.style.width = `${(sc/4)*100}%`;
+      const labels = ['매우 약함','약함','보통','강함','매우 강함'];
+      strengthText.textContent = pw ? `강도: ${labels[sc]}` : '';
+    }
+
+    // ============================
+    // Prefill & dirty tracking
+    // ============================
+    const initial = { name: '', birthday: '', phone: '', email: '' };
+    let dirty = false;
+
+    async function prefill(){
+      try{
+        const res = await apiFetch(API.me);
+        if(!res.ok){ throw new Error('prefill failed'); }
+        const data = await res.json();
+        nameEl.value = data.name || '';
+        birthdayEl.value = data.birthday || '';
+        phoneEl.value = data.phone || '';
+        emailEl.value = data.email || '';
+        Object.assign(initial, { name: nameEl.value, birthday: birthdayEl.value, phone: phoneEl.value, email: emailEl.value });
+        dirty = false; updateSaveState();
+      }catch(err){ showToast('계정 정보를 불러오지 못했습니다.', 'error'); }
+    }
+
+    function updateSaveState(){
+      const valid = validateAll(false);
+      const now = { name: nameEl.value, birthday: birthdayEl.value, phone: phoneEl.value, email: emailEl.value };
+      const isDirty = Object.keys(initial).some(k => String(initial[k]||'') !== String(now[k]||''));
+      dirty = isDirty;
+      btnSave.disabled = !(valid && dirty);
+    }
+
+    // ============================
+    // Validation
+    // ============================
+    function validateAll(showMsgs = true){
+      let ok = true;
+      // name
+      const nv = nameEl.value.trim();
+      let msg = '';
+      if(nv.length < 2 || nv.length > 30) { ok=false; msg='이름은 2~30자여야 합니다.'; }
+      if(showMsgs) setError(nameEl, errName, msg);
+
+      // birthday
+      const bv = birthdayEl.value;
+      msg = '';
+      if(!isPastDate(bv)) { ok=false; msg='유효한 과거 날짜여야 합니다.'; }
+      if(showMsgs) setError(birthdayEl, errBirthday, msg);
+
+      // phone
+      const pv = phoneEl.value;
+      msg = '';
+      if(!isKR010(pv)) { ok=false; msg='형식: 010-XXXX-XXXX 또는 숫자만 11자리'; }
+      if(showMsgs) setError(phoneEl, errPhone, msg);
+
+      // email
+      const ev = emailEl.value;
+      msg = '';
+      if(!isEmail(ev)) { ok=false; msg='유효한 이메일 형식이 아닙니다.'; }
+      if(showMsgs) setError(emailEl, errEmail, msg);
+
+      return ok;
+    }
+
+    // input listeners
+    [nameEl, birthdayEl, phoneEl, emailEl].forEach(el => {
+      el.addEventListener('input', (e)=>{
+        if(e.target === phoneEl){
+          const cur = phoneEl.selectionStart;
+          const before = phoneEl.value;
+          phoneEl.value = formatKRPhone(before);
+          // cursor best effort
+          phoneEl.selectionStart = phoneEl.selectionEnd = cur;
+        }
+        updateSaveState();
+      });
+      el.addEventListener('blur', ()=> validateAll(true));
+    });
+
+    // Enter submits
+    form.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        if(!btnSave.disabled) form.requestSubmit();
+      }
+    });
+
+    // Submit
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(!validateAll(true)) return;
+      btnSave.disabled = true;
+      try{
+        const body = { name: nameEl.value.trim(), birthday: birthdayEl.value, phone: normalizePhoneDigits(phoneEl.value).replace(/^(010)(\d{4})(\d{4})$/, '$1-$2-$3'), email: emailEl.value.trim() };
+        const res = await apiFetch(API.updateMe, { method: 'PUT', body });
+        if(res.ok){
+          Object.assign(initial, body);
+          updateSaveState();
+          showToast('저장되었습니다.', 'success');
+        }else{
+          const data = await res.json();
+          if(res.status === 400){
+            if(data.field === 'name') setError(nameEl, errName, data.message||'검증 오류');
+            if(data.field === 'birthday') setError(birthdayEl, errBirthday, data.message||'검증 오류');
+            if(data.field === 'phone') setError(phoneEl, errPhone, data.message||'검증 오류');
+            if(data.field === 'email') setError(emailEl, errEmail, data.message||'검증 오류');
+            showToast('입력값을 확인해주세요.', 'error');
+          } else if(res.status === 401){
+            showToast('세션이 만료되었습니다. 다시 로그인해주세요.', 'error');
+          } else if(res.status === 409){
+            setError(emailEl, errEmail, data.message||'이미 사용 중인 이메일입니다.');
+            showToast('이메일 중복으로 저장 실패', 'error');
+          } else {
+            showToast('저장 중 오류가 발생했습니다.', 'error');
+          }
+        }
+      }catch(err){ showToast('네트워크 오류가 발생했습니다.', 'error'); }
+      finally{ updateSaveState(); }
+    });
+
+    // ============================
+    // Password modal UX
+    // ============================
+    let lastFocusBtn = null;
+    function openPw(){ pwModal.classList.add('show'); lastFocusBtn = document.activeElement; pwCurrent.focus(); }
+    function closePw(){ pwModal.classList.remove('show'); if(lastFocusBtn) lastFocusBtn.focus(); pwForm.reset(); clearPwErrors(); strengthBar.style.width = '0%'; strengthText.textContent = ''; stopResendCountdown(); }
+
+    pwOpen.addEventListener('click', openPw);
+    pwClose.addEventListener('click', closePw);
+    pwCancel.addEventListener('click', closePw);
+    pwModal.addEventListener('click', (e)=>{ if(e.target === pwModal) closePw(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && pwModal.classList.contains('show')) closePw(); });
+
+    // show/hide toggles
+    document.querySelectorAll('[data-toggle]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-toggle');
+        const inp = document.getElementById(id);
+        if(!inp) return;
+        const isPwd = inp.type === 'password';
+        inp.type = isPwd ? 'text' : 'password';
+        btn.innerHTML = isPwd ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+        inp.focus();
+      });
+    });
+
+    // strength meter
+    pwNew.addEventListener('input', ()=>{ updateStrengthUI(); validatePw(false); });
+    pwConfirm.addEventListener('input', ()=> validatePw(false));
+
+    function clearPwErrors(){ ['current','new','confirm','code'].forEach(k=>{
+      const map = { current:[pwCurrent, errPwCurrent], new:[pwNew, errPwNew], confirm:[pwConfirm, errPwConfirm], code:[pwCode, errPwCode] };
+      const [el, er] = map[k]; setError(el, er, '');
+    }); }
+
+    function validatePw(showMsgs=true){
+      let ok = true;
+      // current (non-empty only)
+      if(!pwCurrent.value){ ok=false; if(showMsgs) setError(pwCurrent, errPwCurrent, '현재 비밀번호를 입력하세요.'); else setError(pwCurrent, errPwCurrent, ''); }
+      // new
+      const cur = pwCurrent.value;
+      const nw = pwNew.value;
+      let msg = '';
+      const cats = [/[A-Z]/, /[a-z]/, /\d/, /[^A-Za-z0-9]/].reduce((acc,re)=>acc + (re.test(nw)?1:0), 0);
+      if(nw.length < 10 || cats < 3){ ok=false; msg='정책 불만족: 길이 10+ / 4분류 중 3+'; }
+      if(nw && cur && nw === cur){ ok=false; msg='현재 비밀번호와 달라야 합니다.'; }
+      if(showMsgs) setError(pwNew, errPwNew, msg); else setError(pwNew, errPwNew, '');
+      // confirm
+      msg = '';
+      if(nw !== pwConfirm.value) { ok=false; msg='비밀번호가 일치하지 않습니다.'; }
+      if(showMsgs) setError(pwConfirm, errPwConfirm, msg); else setError(pwConfirm, errPwConfirm, '');
+      // code
+      msg = '';
+      if(!/^[0-9]{6}$/.test(pwCode.value||'')){ ok=false; msg='6자리 숫자 코드를 입력하세요.'; }
+      if(showMsgs) setError(pwCode, errPwCode, msg); else setError(pwCode, errPwCode, '');
+      return ok;
+    }
+
+    // Enter submits in modal
+    pwForm.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); pwForm.requestSubmit(); } });
+
+    // Resend countdown (rate limit)
+    let resendTimer = null, remain = 0;
+    function startResendCountdown(s=60){
+      remain = s; updateResendLabel();
+      btnSendCode.disabled = true;
+      resendTimer = setInterval(()=>{ remain--; updateResendLabel(); if(remain<=0) stopResendCountdown(); }, 1000);
+    }
+    function stopResendCountdown(){ if(resendTimer){ clearInterval(resendTimer); resendTimer = null; } btnSendCode.disabled = false; resendCountdown.textContent=''; }
+    function updateResendLabel(){ resendCountdown.textContent = remain>0 ? `재전송 대기 ${remain}s` : ''; }
+
+    btnSendCode.addEventListener('click', async ()=>{
+      if(remain>0){ showToast(`잠시 후 재시도해주세요 (${remain}s)`, 'info'); return; }
+      // Optionally require current pw entered before sending code
+      if(!pwCurrent.value){ setError(pwCurrent, errPwCurrent, '먼저 현재 비밀번호를 입력하세요.'); pwCurrent.focus(); return; }
+      try{
+        const res = await apiFetch(API.sendCode, { method: 'POST', body: { purpose: 'password_change' } });
+        if(res.ok){ showToast('인증 코드를 전송했습니다.', 'success'); startResendCountdown(60); }
+        else{
+          const data = await res.json(); showToast(data.message || '코드 전송 실패', 'error');
+        }
+      }catch(err){ showToast('네트워크 오류로 전송 실패', 'error'); }
+    });
+
+    // Change password submit
+    pwForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(!validatePw(true)) return;
+      try{
+        const res = await apiFetch(API.changePassword, { method: 'POST', body: { currentPassword: pwCurrent.value, newPassword: pwNew.value, code: pwCode.value } });
+        const data = await res.json();
+        if(res.ok){ showToast('비밀번호가 변경되었습니다.', 'success'); closePw(); }
+        else{
+          if(res.status === 400){
+            if(data.field === 'code') setError(pwCode, errPwCode, data.message||'인증 코드 오류');
+            if(data.field === 'new') setError(pwNew, errPwNew, data.message||'비밀번호 정책 오류');
+            showToast('입력값을 확인해주세요.', 'error');
+          } else if(res.status === 401){
+            setError(pwCurrent, errPwCurrent, data.message || '현재 비밀번호가 올바르지 않습니다.');
+            showToast('인증 실패', 'error');
+          } else {
+            showToast('변경 중 오류가 발생했습니다.', 'error');
+          }
+        }
+      }catch(err){ showToast('네트워크 오류가 발생했습니다.', 'error'); }
+    });
+
+    // Init
+    prefill();
+  </script>
+</body>
+</html>

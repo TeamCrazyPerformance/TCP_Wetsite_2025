@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP Admin - Server Management | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .progress-bar {
+            background-color: var(--light-gray);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+        }
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(168, 197, 230, 0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            background: rgba(168, 197, 230, 0.1);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-warning:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-running {
+            background: linear-gradient(135deg, var(--accent-green), #10b981);
+            color: #ffffff;
+        }
+        .status-stopped {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+        .status-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+        }
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .maintenance-banner {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: 600;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .service-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 197, 230, 0.15);
+        }
+        .log-entry {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .role-badge {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            color: #ffffff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <!-- Maintenance Banner (hidden by default) -->
+    <div id="maintenanceBanner" class="maintenance-banner" style="display: none;">
+        <i class="fas fa-tools mr-2"></i>
+        시스템 유지보수 중입니다. 일부 기능이 제한될 수 있습니다.
+    </div>
+
+    <div class="flex h-screen">
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Dashboard</h3>
+                    <a href="admin.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">Overview</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Page Management</h3>
+                    <a href="admin_main.html" class="sidebar-link"><i class="fas fa-file-alt"></i><span class="ml-2">Main Page</span></a>
+                    <a href="admin_recruitment.html" class="sidebar-link"><i class="fas fa-bullhorn"></i><span class="ml-2">Recruitment Page</span></a>
+                    <a href="admin_announcement.html" class="sidebar-link"><i class="fas fa-newspaper"></i><span class="ml-2">Announcement Page</span></a>
+                    <a href="admin_study.html" class="sidebar-link"><i class="fas fa-book"></i><span class="ml-2">Study Group Page</span></a>
+                    <a href="admin_team.html" class="sidebar-link"><i class="fas fa-users"></i><span class="ml-2">Project Team Page</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Management</h3>
+                    <a href="admin_permission.html" class="sidebar-link"><i class="fas fa-user-shield"></i><span class="ml-2">Manage Permissions</span></a>
+                    <a href="admin_deletaccount.html" class="sidebar-link"><i class="fas fa-user-slash"></i><span class="ml-2">Delete Accounts</span></a>
+                    <a href="#" class="sidebar-link"><i class="fas fa-database"></i><span class="ml-2">Modify Information</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Application Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-user-plus"></i><span class="ml-2">New Member Applications</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Web Server Management</h3>
+                    <a href="admin_server.html" class="sidebar-link bg-gray-700 text-white"><i class="fas fa-server"></i><span class="ml-2">Server Tools</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <div class="flex items-center space-x-4">
+                            <h2 class="orbitron text-2xl font-bold text-white hidden md:block">Server Management</h2>
+                            <span class="role-badge">Owner</span>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <!-- Server Status Overview -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">서버 상태 모니터링</h3>
+                            <div class="flex space-x-2">
+                                <button class="btn-secondary text-sm" onclick="refreshMetrics()">
+                                    <i class="fas fa-sync-alt mr-2"></i>새로고침
+                                </button>
+                                <button class="btn-warning text-sm" onclick="toggleMaintenance()">
+                                    <i class="fas fa-tools mr-2"></i>유지보수 모드
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- CPU Usage -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-microchip text-blue-400"></i>
+                                        <h5 class="font-semibold text-gray-300">CPU 사용률</h5>
+                                    </div>
+                                    <span class="text-lg font-bold text-white" id="cpuUsage">42%</span>
+                                </div>
+                                <div class="progress-bar h-3 mb-2">
+                                    <div class="progress-bar-inner" id="cpuBar" style="width: 42%;"></div>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <div>Load Average: 1.2, 1.5, 1.8</div>
+                                    <div>Temperature: 58°C</div>
+                                </div>
+                            </div>
+
+                            <!-- RAM Usage -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-memory text-purple-400"></i>
+                                        <h5 class="font-semibold text-gray-300">메모리 사용률</h5>
+                                    </div>
+                                    <span class="text-lg font-bold text-white" id="ramUsage">6.8GB / 16GB</span>
+                                </div>
+                                <div class="progress-bar h-3 mb-2">
+                                    <div class="progress-bar-inner" id="ramBar" style="width: 42.5%;"></div>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <div>Available: 9.2GB</div>
+                                    <div>Cached: 2.1GB</div>
+                                </div>
+                            </div>
+
+                            <!-- Disk Usage -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-hdd text-green-400"></i>
+                                        <h5 class="font-semibold text-gray-300">디스크 사용률</h5>
+                                    </div>
+                                    <span class="text-lg font-bold text-white" id="diskUsage">75%</span>
+                                </div>
+                                <div class="progress-bar h-3 mb-2">
+                                    <div class="progress-bar-inner bg-green-500" id="diskBar" style="width: 75%;"></div>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <div>Used: 180GB / 240GB</div>
+                                    <div>Free: 60GB</div>
+                                </div>
+                            </div>
+
+                            <!-- Network Stats -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-network-wired text-yellow-400"></i>
+                                        <h5 class="font-semibold text-gray-300">네트워크</h5>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">TX:</span>
+                                        <span class="text-white font-bold" id="networkTx">15.2 Mbps</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">RX:</span>
+                                        <span class="text-white font-bold" id="networkRx">88.4 Mbps</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 pt-2">
+                                        <div>Uptime: <span id="serverUptime">42d 11h 5m</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Chart -->
+                        <div class="mt-6 widget-card p-6 rounded-xl">
+                            <h4 class="text-xl font-bold mb-4 text-blue-300">실시간 시스템 성능</h4>
+                            <div class="chart-container">
+                                <canvas id="systemPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Service Status -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">서비스 상태</h3>
+                            <button class="btn-primary" onclick="restartAllServices()">
+                                <i class="fas fa-redo mr-2"></i>모든 서비스 재시작
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- API Server (NestJS) -->
+                            <div class="service-card">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-server text-blue-400 text-2xl"></i>
+                                        <div>
+                                            <h5 class="font-bold text-white">API 서버</h5>
+                                            <p class="text-sm text-gray-400">NestJS Backend</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator status-running pulse">
+                                        <i class="fas fa-circle mr-1"></i>실행중
+                                    </span>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">버전:</span>
+                                        <span class="text-white">v1.2.3</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">포트:</span>
+                                        <span class="text-white">3000</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">응답시간:</span>
+                                        <span class="text-green-400">24ms</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="btn-success text-xs flex-1" onclick="restartService('api')">
+                                        <i class="fas fa-redo mr-1"></i>재시작
+                                    </button>
+                                    <button class="btn-secondary text-xs" onclick="viewLogs('api')">
+                                        <i class="fas fa-file-alt mr-1"></i>로그
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Database (PostgreSQL) -->
+                            <div class="service-card">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-database text-green-400 text-2xl"></i>
+                                        <div>
+                                            <h5 class="font-bold text-white">데이터베이스</h5>
+                                            <p class="text-sm text-gray-400">PostgreSQL</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator status-running pulse">
+                                        <i class="fas fa-circle mr-1"></i>실행중
+                                    </span>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">버전:</span>
+                                        <span class="text-white">15.2</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">연결:</span>
+                                        <span class="text-white">8/100</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">크기:</span>
+                                        <span class="text-white">2.4GB</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="btn-success text-xs flex-1" onclick="restartService('db')">
+                                        <i class="fas fa-redo mr-1"></i>재시작
+                                    </button>
+                                    <button class="btn-warning text-xs" onclick="backupDatabase()">
+                                        <i class="fas fa-download mr-1"></i>백업
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Redis Cache -->
+                            <div class="service-card">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-memory text-red-400 text-2xl"></i>
+                                        <div>
+                                            <h5 class="font-bold text-white">Redis</h5>
+                                            <p class="text-sm text-gray-400">Cache Server</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator status-running pulse">
+                                        <i class="fas fa-circle mr-1"></i>실행중
+                                    </span>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">버전:</span>
+                                        <span class="text-white">7.0.5</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">메모리:</span>
+                                        <span class="text-white">156MB</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">키:</span>
+                                        <span class="text-white">1,247</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="btn-success text-xs flex-1" onclick="restartService('redis')">
+                                        <i class="fas fa-redo mr-1"></i>재시작
+                                    </button>
+                                    <button class="btn-danger text-xs" onclick="clearCache()">
+                                        <i class="fas fa-trash mr-1"></i>캐시삭제
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Frontend (React) -->
+                            <div class="service-card">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-desktop text-purple-400 text-2xl"></i>
+                                        <div>
+                                            <h5 class="font-bold text-white">프론트엔드</h5>
+                                            <p class="text-sm text-gray-400">React App</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator status-running pulse">
+                                        <i class="fas fa-circle mr-1"></i>실행중
+                                    </span>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">버전:</span>
+                                        <span class="text-white">v2.1.0</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">빌드:</span>
+                                        <span class="text-white">#247</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-400">CDN:</span>
+                                        <span class="text-green-400">활성</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="btn-success text-xs flex-1" onclick="restartService('frontend')">
+                                        <i class="fas fa-redo mr-1"></i>재배포
+                                    </button>
+                                    <button class="btn-secondary text-xs" onclick="viewLogs('frontend')">
+                                        <i class="fas fa-file-alt mr-1"></i>로그
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Control Actions -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">제어 작업</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Maintenance Mode -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <i class="fas fa-tools text-yellow-400 text-2xl"></i>
+                                    <div>
+                                        <h5 class="font-bold text-white">유지보수 모드</h5>
+                                        <p class="text-sm text-gray-400">사용자 접근 제한</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-300">현재 상태:</span>
+                                        <span class="text-sm text-green-400" id="maintenanceStatus">비활성</span>
+                                    </div>
+                                    <button class="btn-warning w-full" onclick="toggleMaintenance()">
+                                        <i class="fas fa-toggle-off mr-2" id="maintenanceIcon"></i>
+                                        <span id="maintenanceText">활성화</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Cache Management -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <i class="fas fa-broom text-blue-400 text-2xl"></i>
+                                    <div>
+                                        <h5 class="font-bold text-white">캐시 관리</h5>
+                                        <p class="text-sm text-gray-400">Redis 캐시 제어</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-300">캐시 키:</span>
+                                        <span class="text-sm text-white">1,247개</span>
+                                    </div>
+                                    <button class="btn-danger w-full" onclick="clearCache()">
+                                        <i class="fas fa-trash mr-2"></i>전체 삭제
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Database Backup -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <i class="fas fa-database text-green-400 text-2xl"></i>
+                                    <div>
+                                        <h5 class="font-bold text-white">DB 백업</h5>
+                                        <p class="text-sm text-gray-400">데이터베이스 스냅샷</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-300">마지막 백업:</span>
+                                        <span class="text-sm text-white">2시간 전</span>
+                                    </div>
+                                    <button class="btn-success w-full" onclick="backupDatabase()">
+                                        <i class="fas fa-download mr-2"></i>백업 생성
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- System Restart -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <i class="fas fa-power-off text-red-400 text-2xl"></i>
+                                    <div>
+                                        <h5 class="font-bold text-white">시스템 재시작</h5>
+                                        <p class="text-sm text-gray-400">전체 서버 재부팅</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-300">업타임:</span>
+                                        <span class="text-sm text-white">42일</span>
+                                    </div>
+                                    <button class="btn-danger w-full" onclick="restartSystem()">
+                                        <i class="fas fa-power-off mr-2"></i>재시작
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Audit Log -->
+                    <section>
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-3xl font-bold gradient-text">작업 기록</h3>
+                            <button class="btn-secondary text-sm" onclick="clearLogs()">
+                                <i class="fas fa-trash mr-2"></i>로그 지우기
+                            </button>
+                        </div>
+                        
+                        <div class="widget-card p-6 rounded-xl">
+                            <div id="auditLog" class="space-y-3 max-h-96 overflow-y-auto">
+                                <!-- Log entries will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 z-50 modal-overlay items-center justify-center" style="display: none;">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex items-center space-x-3 mb-4">
+                <i class="fas fa-exclamation-triangle text-yellow-400 text-2xl"></i>
+                <h4 class="text-xl font-bold text-white">확인 필요</h4>
+            </div>
+            <p class="text-gray-300 mb-6" id="confirmMessage">이 작업을 실행하시겠습니까?</p>
+            <div class="flex space-x-4">
+                <button class="btn-danger flex-1" onclick="confirmAction()">확인</button>
+                <button class="btn-secondary flex-1" onclick="closeModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let maintenanceMode = false;
+        let confirmCallback = null;
+        let systemMetrics = {
+            cpu: 42,
+            ram: 42.5,
+            disk: 75,
+            networkTx: 15.2,
+            networkRx: 88.4
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            setupEventListeners();
+            initializeChart();
+            loadAuditLog();
+            startMetricsUpdate();
+        });
+
+        function initializePage() {
+            // Mobile sidebar toggle
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        function setupEventListeners() {
+            // Close modal when clicking outside
+            document.getElementById('confirmModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+
+        // System metrics simulation
+        function startMetricsUpdate() {
+            setInterval(() => {
+                updateMetrics();
+            }, 5000); // Update every 5 seconds
+        }
+
+        function updateMetrics() {
+            // Simulate metric changes
+            systemMetrics.cpu += (Math.random() - 0.5) * 10;
+            systemMetrics.cpu = Math.max(0, Math.min(100, systemMetrics.cpu));
+            
+            systemMetrics.ram += (Math.random() - 0.5) * 5;
+            systemMetrics.ram = Math.max(0, Math.min(100, systemMetrics.ram));
+            
+            systemMetrics.networkTx = 10 + Math.random() * 20;
+            systemMetrics.networkRx = 50 + Math.random() * 50;
+
+            // Update UI
+            document.getElementById('cpuUsage').textContent = Math.round(systemMetrics.cpu) + '%';
+            document.getElementById('cpuBar').style.width = systemMetrics.cpu + '%';
+            
+            const ramGB = (systemMetrics.ram * 16 / 100).toFixed(1);
+            document.getElementById('ramUsage').textContent = `${ramGB}GB / 16GB`;
+            document.getElementById('ramBar').style.width = systemMetrics.ram + '%';
+            
+            document.getElementById('networkTx').textContent = systemMetrics.networkTx.toFixed(1) + ' Mbps';
+            document.getElementById('networkRx').textContent = systemMetrics.networkRx.toFixed(1) + ' Mbps';
+
+            // Update chart if exists
+            if (window.performanceChart) {
+                updateChart();
+            }
+        }
+
+        function refreshMetrics() {
+            showNotification('시스템 메트릭을 새로고침했습니다.', 'success');
+            updateMetrics();
+        }
+
+        // Chart initialization
+        let performanceChart;
+
+        function initializeChart() {
+            const ctx = document.getElementById('systemPerformanceChart').getContext('2d');
+            
+            const data = {
+                labels: Array.from({length: 20}, (_, i) => `${20-i}분 전`),
+                datasets: [
+                    {
+                        label: 'CPU 사용률 (%)',
+                        data: Array.from({length: 20}, () => Math.random() * 100),
+                        borderColor: '#a8c5e6',
+                        backgroundColor: 'rgba(168, 197, 230, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: '메모리 사용률 (%)',
+                        data: Array.from({length: 20}, () => Math.random() * 100),
+                        borderColor: '#c5a8e6',
+                        backgroundColor: 'rgba(197, 168, 230, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            };
+
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (performanceChart) {
+                // Add new data points
+                performanceChart.data.datasets[0].data.shift();
+                performanceChart.data.datasets[0].data.push(systemMetrics.cpu);
+                
+                performanceChart.data.datasets[1].data.shift();
+                performanceChart.data.datasets[1].data.push(systemMetrics.ram);
+                
+                performanceChart.update('none');
+            }
+        }
+
+        // Service management functions
+        function restartService(serviceName) {
+            const serviceNames = {
+                'api': 'API 서버',
+                'db': '데이터베이스',
+                'redis': 'Redis',
+                'frontend': '프론트엔드'
+            };
+
+            showConfirmModal(
+                `${serviceNames[serviceName]}를 재시작하시겠습니까?`,
+                () => {
+                    showNotification(`${serviceNames[serviceName]} 재시작을 시작했습니다.`, 'warning');
+                    addAuditLog(`${serviceNames[serviceName]} 재시작`, 'warning');
+                    
+                    // Simulate restart process
+                    setTimeout(() => {
+                        showNotification(`${serviceNames[serviceName]} 재시작이 완료되었습니다.`, 'success');
+                        addAuditLog(`${serviceNames[serviceName]} 재시작 완료`, 'success');
+                    }, 3000);
+                }
+            );
+        }
+
+        function restartAllServices() {
+            showConfirmModal(
+                '모든 서비스를 재시작하시겠습니까? 잠시 서비스가 중단될 수 있습니다.',
+                () => {
+                    showNotification('모든 서비스 재시작을 시작했습니다.', 'warning');
+                    addAuditLog('모든 서비스 재시작 시작', 'warning');
+                    
+                    setTimeout(() => {
+                        showNotification('모든 서비스 재시작이 완료되었습니다.', 'success');
+                        addAuditLog('모든 서비스 재시작 완료', 'success');
+                    }, 5000);
+                }
+            );
+        }
+
+        function viewLogs(serviceName) {
+            const serviceNames = {
+                'api': 'API 서버',
+                'frontend': '프론트엔드'
+            };
+            showNotification(`${serviceNames[serviceName]} 로그를 확인합니다.`, 'info');
+        }
+
+        // Control actions
+        function toggleMaintenance() {
+            maintenanceMode = !maintenanceMode;
+            
+            const banner = document.getElementById('maintenanceBanner');
+            const status = document.getElementById('maintenanceStatus');
+            const icon = document.getElementById('maintenanceIcon');
+            const text = document.getElementById('maintenanceText');
+            
+            if (maintenanceMode) {
+                banner.style.display = 'block';
+                status.textContent = '활성';
+                status.className = 'text-sm text-yellow-400';
+                icon.className = 'fas fa-toggle-on mr-2';
+                text.textContent = '비활성화';
+                showNotification('유지보수 모드가 활성화되었습니다.', 'warning');
+                addAuditLog('유지보수 모드 활성화', 'warning');
+            } else {
+                banner.style.display = 'none';
+                status.textContent = '비활성';
+                status.className = 'text-sm text-green-400';
+                icon.className = 'fas fa-toggle-off mr-2';
+                text.textContent = '활성화';
+                showNotification('유지보수 모드가 비활성화되었습니다.', 'success');
+                addAuditLog('유지보수 모드 비활성화', 'success');
+            }
+        }
+
+        function clearCache() {
+            showConfirmModal(
+                'Redis 캐시를 모두 삭제하시겠습니까?',
+                () => {
+                    showNotification('캐시 삭제를 시작했습니다.', 'warning');
+                    addAuditLog('Redis 캐시 삭제', 'info');
+                    
+                    setTimeout(() => {
+                        showNotification('캐시가 성공적으로 삭제되었습니다.', 'success');
+                        addAuditLog('Redis 캐시 삭제 완료', 'success');
+                    }, 2000);
+                }
+            );
+        }
+
+        function backupDatabase() {
+            showConfirmModal(
+                '데이터베이스 백업을 생성하시겠습니까?',
+                () => {
+                    showNotification('데이터베이스 백업을 시작했습니다.', 'info');
+                    addAuditLog('데이터베이스 백업 시작', 'info');
+                    
+                    setTimeout(() => {
+                        showNotification('데이터베이스 백업이 완료되었습니다.', 'success');
+                        addAuditLog('데이터베이스 백업 완료', 'success');
+                    }, 4000);
+                }
+            );
+        }
+
+        function restartSystem() {
+            showConfirmModal(
+                '시스템 전체를 재시작하시겠습니까? 모든 서비스가 잠시 중단됩니다.',
+                () => {
+                    showNotification('시스템 재시작을 시작했습니다.', 'error');
+                    addAuditLog('시스템 재시작', 'error');
+                }
+            );
+        }
+
+        // Modal functions
+        function showConfirmModal(message, callback) {
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmModal').style.display = 'flex';
+            confirmCallback = callback;
+        }
+
+        function confirmAction() {
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+            }
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            confirmCallback = null;
+        }
+
+        // Audit log functions
+        function loadAuditLog() {
+            const logs = [
+                { time: '2025-01-15 14:30:25', action: 'API 서버 재시작', user: 'Admin Kim', type: 'success' },
+                { time: '2025-01-15 13:45:12', action: 'Redis 캐시 삭제', user: 'Admin Kim', type: 'info' },
+                { time: '2025-01-15 12:20:08', action: '데이터베이스 백업 완료', user: 'System', type: 'success' },
+                { time: '2025-01-15 11:15:33', action: '유지보수 모드 비활성화', user: 'Admin Kim', type: 'warning' },
+                { time: '2025-01-15 10:05:44', action: '시스템 메트릭 새로고침', user: 'Admin Kim', type: 'info' }
+            ];
+
+            const logContainer = document.getElementById('auditLog');
+            logContainer.innerHTML = '';
+            
+            logs.forEach(log => {
+                const logEntry = createLogEntry(log);
+                logContainer.appendChild(logEntry);
+            });
+        }
+
+        function createLogEntry(log) {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            
+            const typeColors = {
+                'success': 'text-green-400',
+                'warning': 'text-yellow-400',
+                'error': 'text-red-400',
+                'info': 'text-blue-400'
+            };
+
+            div.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-circle ${typeColors[log.type]} text-xs"></i>
+                        <span class="text-white font-medium">${log.action}</span>
+                        <span class="text-gray-400 text-sm">by ${log.user}</span>
+                    </div>
+                    <span class="text-gray-400 text-sm">${log.time}</span>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function addAuditLog(action, type) {
+            const now = new Date().toLocaleString('ko-KR');
+            const log = {
+                time: now,
+                action: action,
+                user: 'Admin Kim',
+                type: type
+            };
+            
+            const logContainer = document.getElementById('auditLog');
+            const logEntry = createLogEntry(log);
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // Keep only latest 10 entries
+            while (logContainer.children.length > 10) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        function clearLogs() {
+            showConfirmModal(
+                '모든 작업 기록을 삭제하시겠습니까?',
+                () => {
+                    document.getElementById('auditLog').innerHTML = '';
+                    showNotification('작업 기록이 삭제되었습니다.', 'info');
+                }
+            );
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-40 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+            }`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Server time update
+        function updateServerTime() {
+            const timeElements = document.querySelectorAll('[data-time]');
+            timeElements.forEach(el => {
+                el.textContent = new Date().toLocaleTimeString('ko-KR');
+            });
+        }
+        
+        setInterval(updateServerTime, 1000);
+        updateServerTime();
+    </script>
+</body>
+</html>

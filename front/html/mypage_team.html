@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - 팀 구성 이력 | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        
+        .sidebar-link.active {
+            background-color: rgba(168, 197, 230, 0.2);
+            color: #ffffff;
+        }
+        
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        
+        .team-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .team-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .team-card.completed::before {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-ongoing {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+        }
+        
+        .status-completed {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            color: #ffffff;
+        }
+        
+        .role-badge {
+            background: rgba(168, 197, 230, 0.2);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.125rem;
+            display: inline-block;
+        }
+        
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(168, 197, 230, 0.3);
+            margin-right: -8px;
+            transition: all 0.3s ease;
+        }
+        
+        .member-avatar:hover {
+            border-color: var(--accent-blue);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+            border-color: transparent;
+        }
+        
+        .filter-tab:hover:not(.active) {
+            border-color: rgba(168, 197, 230, 0.5);
+            color: #ffffff;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">My Page</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">개인 정보</h3>
+                    <a href="mypage.html" class="sidebar-link">
+                        <i class="fas fa-user"></i><span class="ml-2">프로필 보기/수정</span>
+                    </a>
+                    <a href="mypage_memberpagesetting.html" class="sidebar-link">
+                        <i class="fas fa-eye"></i><span class="ml-2">멤버 페이지 공개 설정</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">활동 관리</h3>
+                    <a href="mypage_study.html" class="sidebar-link">
+                        <i class="fas fa-book"></i><span class="ml-2">참여 스터디 목록</span>
+                    </a>
+                    <a href="mypage_team.html" class="sidebar-link active">
+                        <i class="fas fa-users"></i><span class="ml-2">팀 구성 이력</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">계정 관리</h3>
+                    <a href="mypage_settings.html" class="sidebar-link">
+                        <i class="fas fa-cog"></i><span class="ml-2">개인정보 수정</span>
+                    </a>
+                    <a href="mypage_withdraw.html" class="sidebar-link text-red-400">
+                        <i class="fas fa-sign-out-alt"></i><span class="ml-2">탈퇴 신청</span>
+                    </a>
+                </div>
+
+                <div class="pt-4 border-t border-gray-700">
+                    <a href="index.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">메인 페이지로</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="text-2xl font-bold text-white hidden md:block">팀 구성 이력</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <!-- Page Title and Stats -->
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold gradient-text mb-2">팀 구성 이력</h3>
+                        <p class="text-gray-400 mb-6">TCP에서 참여했던 모든 팀 활동을 확인할 수 있습니다.</p>
+                        
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="stat-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold gradient-text">5</div>
+                                <div class="text-sm text-gray-400">총 참여 팀</div>
+                            </div>
+                            <div class="stat-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-blue-400">2</div>
+                                <div class="text-sm text-gray-400">팀 구성중</div>
+                            </div>
+                            <div class="stat-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-green-400">3</div>
+                                <div class="text-sm text-gray-400">구성 완료</div>
+                            </div>
+                            <div class="stat-card p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-purple-400">1</div>
+                                <div class="text-sm text-gray-400">팀 리더 경험</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="mb-6">
+                        <div class="flex space-x-2">
+                            <button class="filter-tab active" data-filter="all">전체</button>
+                            <button class="filter-tab" data-filter="my-led">내가 모집중인 팀</button>
+                            <button class="filter-tab" data-filter="my-applied">내가 지원한 팀</button>
+                        </div>
+                    </div>
+
+                    <!-- Ongoing Teams Section -->
+                    <section id="ongoing-section" class="mb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-2xl font-bold text-white flex items-center">
+                                <i class="fas fa-users-cog text-blue-400 mr-3"></i>팀 구성중
+                                <span class="ml-2 text-sm bg-blue-500 bg-opacity-20 text-blue-400 px-2 py-1 rounded-full">2</span>
+                            </h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="ongoing-teams">
+                            <!-- Ongoing Team Card 1 -->
+                            <div class="team-card p-6 rounded-xl card-hover" data-status="ongoing" data-owner="leader" data-team-id="team1" onclick="openTeamModal('team1', this.dataset.owner)">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">AI 해커톤 팀</h5>
+                                    <span class="status-badge status-ongoing">구성중</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2024.07.14 - 2024.07.18</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">AI Creativity Hackathon</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-user-tag text-purple-400 w-4"></i>
+                                        <span class="ml-2">역할: 팀 리더</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap mb-4">
+                                    <span class="role-badge">AI</span>
+                                    <span class="role-badge">기획</span>
+                                    <span class="role-badge">프론트엔드</span>
+                                </div>
+                            </div>
+
+                            <!-- Ongoing Team Card 2 -->
+                            <div class="team-card p-6 rounded-xl card-hover" data-status="ongoing" data-owner="member" data-team-id="team2" onclick="openTeamModal('team2', this.dataset.owner)">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">캠퍼스 앱 개발팀</h5>
+                                    <span class="status-badge status-ongoing">구성중</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2024.09.01 - 2024.12.15</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-mobile-alt text-green-400 w-4"></i>
+                                        <span class="ml-2">대학생 연합 프로젝트</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-user-tag text-purple-400 w-4"></i>
+                                        <span class="ml-2">역할: 프론트엔드 개발자</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap mb-4">
+                                    <span class="role-badge">React</span>
+                                    <span class="role-badge">React Native</span>
+                                    <span class="role-badge">UI/UX</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Completed Teams Section -->
+                    <section id="completed-section" class="mb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-2xl font-bold text-white flex items-center">
+                                <i class="fas fa-check-circle text-green-400 mr-3"></i>구성 완료된 팀
+                                <span class="ml-2 text-sm bg-green-500 bg-opacity-20 text-green-400 px-2 py-1 rounded-full">3</span>
+                            </h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="completed-teams">
+                            <!-- Completed Team Cards -->
+                            <div class="team-card completed p-6 rounded-xl card-hover" data-status="completed" data-owner="member" data-team-id="team3" onclick="openTeamModal('team3', this.dataset.owner)">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">Software Maestro 팀</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2024.01.15 - 2024.04.30</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">Software Maestro 14기</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-user-tag text-purple-400 w-4"></i>
+                                        <span class="ml-2">역할: 백엔드 개발자</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap mb-4">
+                                    <span class="role-badge">Spring Boot</span>
+                                    <span class="role-badge">React</span>
+                                    <span class="role-badge">AWS</span>
+                                </div>
+                            </div>
+
+                            <div class="team-card completed p-6 rounded-xl card-hover" data-status="completed" data-owner="member" data-team-id="team4" onclick="openTeamModal('team4', this.dataset.owner)">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">ICPC 대회 팀</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2023.09.01 - 2023.11.10</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-trophy text-yellow-400 w-4"></i>
+                                        <span class="ml-2">ACM-ICPC 대회</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-user-tag text-purple-400 w-4"></i>
+                                        <span class="ml-2">역할: 팀원</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap mb-4">
+                                    <span class="role-badge">Algorithm</span>
+                                    <span class="role-badge">C++</span>
+                                    <span class="role-badge">Problem Solving</span>
+                                </div>
+                            </div>
+
+                            <div class="team-card completed p-6 rounded-xl card-hover" data-status="completed" data-owner="member" data-team-id="team5" onclick="openTeamModal('team5', this.dataset.owner)">
+                                <div class="flex items-start justify-between mb-4">
+                                    <h5 class="text-lg font-bold text-white">게임 개발 팀</h5>
+                                    <span class="status-badge status-completed">완료</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-calendar-alt text-blue-400 w-4"></i>
+                                        <span class="ml-2">2023.03.01 - 2023.06.30</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-gamepad text-pink-400 w-4"></i>
+                                        <span class="ml-2">인디 게임 개발</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-user-tag text-purple-400 w-4"></i>
+                                        <span class="ml-2">역할: 게임 프로그래머</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap mb-4">
+                                    <span class="role-badge">Unity</span>
+                                    <span class="role-badge">C#</span>
+                                    <span class="role-badge">2D Game</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Team Detail Modal -->
+    <div id="team-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="modal-title" class="text-2xl font-bold gradient-text">팀 상세 정보</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="modal-content" class="space-y-4">
+                <!-- Modal content will be dynamically filled -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Filter functionality
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const teamCards = document.querySelectorAll('.team-card');
+        const ongoingSection = document.getElementById('ongoing-section');
+        const completedSection = document.getElementById('completed-section');
+
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+            // 활성 탭 전환
+            filterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const filter = tab.dataset.filter;
+
+            if (filter === 'all') {
+                // 전체: 기존 섹션 구분 그대로 표시
+                ongoingSection.style.display = 'block';
+                completedSection.style.display = 'block';
+                teamCards.forEach(card => card.style.display = 'block');
+                return;
+            }
+
+            if (filter === 'my-led') {
+                // 내가 모집중인 팀: 내가 리더이고(leader) 현재 구성중(ongoing)
+                ongoingSection.style.display = 'block';
+                completedSection.style.display = 'none';
+                teamCards.forEach(card => {
+                const isLeader = card.dataset.owner === 'leader';
+                const isOngoing = card.dataset.status === 'ongoing';
+                card.style.display = (isLeader && isOngoing) ? 'block' : 'none';
+                });
+                return;
+            }
+
+            if (filter === 'my-applied') {
+                // 내가 지원한 팀: 리더가 아니고(member) 현재 구성중(ongoing)
+                ongoingSection.style.display = 'block';
+                completedSection.style.display = 'none';
+                teamCards.forEach(card => {
+                const isMember = card.dataset.owner === 'member';
+                const isOngoing = card.dataset.status === 'ongoing';
+                card.style.display = (isMember && isOngoing) ? 'block' : 'none';
+                });
+                return;
+            }
+
+            // (옵션) 만약 완료된 팀도 포함하고 싶다면 위 조건에서
+            // isOngoing 체크를 제거하거나 completedSection도 'block'으로 두세요.
+            });
+        });
+
+        // Team data
+        const teamData = {
+            team1: {
+                title: 'AI 해커톤 팀',
+                status: '팀 구성중',
+                period: '2024.07.14 - 2024.07.18',
+                event: 'AI Creativity Hackathon',
+                role: '팀 리더',
+                description: 'AI 모델을 활용해 사회 문제를 해결하는 창의적인 솔루션을 개발하는 해커톤 팀입니다.',
+                techStack: ['Python', 'TensorFlow', 'React', 'FastAPI'],
+                goals: ['AI 모델 개발', '웹 서비스 구현', '사회 문제 해결 방안 제시'],
+                recruitingRoles: [ { role: '백엔드 개발자', count: 1 } ],
+                leaderPOC: { name: 'Admin Kim', phone: '010-1111-2222', email: 'admin.kim@example.com' },
+                applicants: [
+                { name: '이지원', phone: '010-3333-4444', email: 'apply.lee@example.com' },
+                { name: '박후보', phone: '010-5555-6666', email: 'apply.park@example.com' }
+                ],
+                links: ['https://github.com/ai-hackathon-team', 'https://notion.so/ai-hackathon']
+            },
+            team2: {
+                title: '캠퍼스 앱 개발팀',
+                status: '팀 구성중',
+                period: '2024.09.01 - 2024.12.15',
+                event: '대학생 연합 프로젝트',
+                role: '프론트엔드 개발자',
+                description: '대학생들의 캠퍼스 생활을 편리하게 만들어 줄 모바일 앱을 개발하는 프로젝트입니다.',
+                techStack: ['React Native', 'Node.js', 'MongoDB', 'Firebase'],
+                goals: ['모바일 앱 개발', '사용자 경험 최적화', '실제 서비스 배포'],
+                recruitingRoles: [ { role: '프론트엔드 개발자', count: 1 } ],
+                leaderPOC: { name: '최Leader', phone: '010-7777-8888', email: 'leader.choi@example.com' },
+                applicants: [], // 내가 팀원인 팀은 지원자 목록을 볼 필요 없음(옵션)
+                links: ['https://github.com/campus-app-team']
+            },
+            team3: {
+                title: 'Software Maestro 팀',
+                status: '구성 완료',
+                period: '2024.01.15 - 2024.04.30',
+                event: 'Software Maestro 14기',
+                role: '백엔드 개발자',
+                description: '실제 사용자들이 사용할 수 있는 웹 서비스를 개발하여 Software Maestro 과정을 수료했습니다.',
+                techStack: ['Spring Boot', 'React', 'MySQL', 'AWS'],
+                goals: ['실서비스 개발', '사용자 피드백 수집', '비즈니스 모델 검증'],
+                achievement: '우수 프로젝트 선정',
+                leaderPOC: { name: '이Captain', phone: '010-1212-3434', email: 'captain.lee@example.com' },
+                applicants: [],
+                links: ['https://github.com/software-maestro-team', 'https://project-demo.com']
+            },
+            team4: {
+                title: 'ICPC 대회 팀',
+                status: '구성 완료',
+                period: '2023.09.01 - 2023.11.10',
+                event: 'ACM-ICPC 대회',
+                role: '팀원',
+                description: 'ACM-ICPC 프로그래밍 대회에 참가하여 알고리즘 문제 해결 능력을 겨뤘습니다.',
+                techStack: ['C++', 'Algorithm', 'Data Structure'],
+                goals: ['알고리즘 실력 향상', '팀워크 향상', '대회 입상'],
+                achievement: '지역 예선 통과',
+                leaderPOC: { name: '알고리즘마스터', phone: '010-9999-0000', email: 'algo.master@example.com' },
+                applicants: [],
+                links: ['https://github.com/icpc-team']
+            },
+            team5: {
+                title: '게임 개발 팀',
+                status: '구성 완료',
+                period: '2023.03.01 - 2023.06.30',
+                event: '인디 게임 개발',
+                role: '게임 프로그래머',
+                description: '2D 플랫폼 게임을 개발하여 Steam에 출시한 인디 게임 개발 팀입니다.',
+                techStack: ['Unity', 'C#', '2D Graphics', 'Audio'],
+                goals: ['게임 개발', '플레이 테스트', 'Steam 출시'],
+                achievement: 'Steam 출시 완료',
+                leaderPOC: { name: '게임기획자', phone: '010-2323-4545', email: 'pm.game@example.com' },
+                applicants: [], 
+                links: ['https://github.com/game-dev-team', 'https://store.steampowered.com/app/game']
+            }
+        };
+
+        // Modal functions
+        function openTeamModal(teamId, owner) {
+            const team = teamData[teamId];
+            if (!team) return;
+
+            function recruitingSummary(roles) {
+                const items = (Array.isArray(roles) ? roles : [])
+                    .filter(r => r && r.role && Number(r.count) > 0)
+                    .map(r => `${r.role} ${Number(r.count)}명`);
+                return items.length ? `${items.join(', ')} 모집 중` : '';
+            }
+
+            const isLeader = owner === 'leader';
+            const isOngoing = team.status === '팀 구성중';
+            const summaryText = isOngoing ? recruitingSummary(team.recruitingRoles) : '';
+
+            // 팀원 정보(POC) 섹션: 리더↔팀원 분기
+            const memberSectionHTML = (() => {
+                if (isLeader) {
+                    const list = Array.isArray(team.applicants) ? team.applicants : [];
+                    const hasApplicants = list.length > 0;
+
+                    return `
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-user-check text-yellow-400 mr-2"></i>지원 멤버
+                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-yellow-500 bg-opacity-20 text-yellow-300">${list.length}</span>
+                        </h4>
+                        ${hasApplicants ? `
+                        <div class="overflow-x-auto rounded-lg border border-gray-700">
+                            <table class="min-w-full text-sm">
+                            <thead class="bg-gray-800 bg-opacity-70 text-gray-300">
+                                <tr>
+                                <th class="px-4 py-2 text-left">이름</th>
+                                <th class="px-4 py-2 text-left">전화</th>
+                                <th class="px-4 py-2 text-left">이메일</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${list.map(a => `
+                                <tr class="border-t border-gray-700">
+                                    <td class="px-4 py-2 text-white">${a.name || '-'}</td>
+                                    <td class="px-4 py-2">
+                                    ${a.phone ? `<a href="tel:${a.phone}" class="text-blue-400 hover:text-blue-300">${a.phone}</a>` : '<span class="text-gray-400">-</span>'}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                    ${a.email ? `<a href="mailto:${a.email}" class="text-blue-400 hover:text-blue-300">${a.email}</a>` : '<span class="text-gray-400">-</span>'}
+                                    </td>
+                                </tr>
+                                `).join('')}
+                            </tbody>
+                            </table>
+                        </div>
+                        ` : `
+                        <div class="p-4 rounded-lg bg-gray-800 bg-opacity-50 text-gray-400">
+                            현재 지원자가 없습니다.
+                        </div>
+                        `}
+                    </div>
+                    `;
+                } else {
+                    const p = team.leaderPOC || {};
+                    return `
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-white mb-3"><i class="fas fa-user-shield text-green-400 mr-2"></i>팀 리더 연락처</h4>
+                        <div class="p-4 rounded-lg bg-gray-800 bg-opacity-50 text-sm">
+                        <div class="text-white font-semibold mb-2">${p.name || '리더'}</div>
+                        <div class="flex items-center space-x-3 text-gray-300">
+                            <div><i class="fas fa-phone-alt w-4"></i></div>
+                            <div>${p.phone ? `<a href="tel:${p.phone}" class="text-blue-400 hover:text-blue-300">${p.phone}</a>` : '<span class="text-gray-400">-</span>'}</div>
+                        </div>
+                        <div class="flex items-center space-x-3 text-gray-300 mt-2">
+                            <div><i class="fas fa-envelope w-4"></i></div>
+                            <div>${p.email ? `<a href="mailto:${p.email}" class="text-blue-400 hover:text-blue-300">${p.email}</a>` : '<span class="text-gray-400">-</span>'}</div>
+                        </div>
+                        </div>
+                    </div>
+                    `;
+                }
+            })();
+
+            document.getElementById('modal-title').textContent = team.title;
+
+            // 안전 가드: recruitingRoles가 없으면 빈 배열
+            if (!Array.isArray(team.recruitingRoles)) {
+                team.recruitingRoles = [];
+            }
+
+            const modalContent = document.getElementById('modal-content');
+
+            // 모집 현황 관리 UI(리더 & 구성중일 때만)
+            const recruitingManagerHTML = (isLeader && isOngoing) ? `
+                <div class="mb-8 border-t border-gray-700 pt-6">
+                <h4 class="font-semibold text-white mb-3 flex items-center">
+                    <i class="fas fa-user-plus mr-2 text-yellow-400"></i>모집 현황 관리
+                </h4>
+
+                <div id="recruiting-roles" class="space-y-2 mb-4">
+                    ${team.recruitingRoles.map((r, idx) => `
+                    <div class="flex items-center space-x-2" data-idx="${idx}">
+                        <input type="text" class="flex-1 px-3 py-2 rounded bg-gray-800 text-sm"
+                            value="${r.role}" placeholder="역할명 (예: 백엔드 개발자)">
+                        <div class="flex items-center space-x-1">
+                        <button class="px-2 py-1 text-sm border rounded" data-action="dec">-</button>
+                        <input type="number" min="0" class="w-16 text-center px-2 py-1 rounded bg-gray-800 text-sm"
+                                value="${r.count}">
+                        <button class="px-2 py-1 text-sm border rounded" data-action="inc">+</button>
+                        </div>
+                        <button class="px-2 py-1 text-sm border rounded text-red-300" data-action="remove">삭제</button>
+                    </div>
+                    `).join('')}
+                </div>
+
+                <div class="flex items-center space-x-2 mb-4">
+                    <button id="add-role" class="px-3 py-2 text-sm border rounded">
+                    역할 추가
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button id="save-recruiting" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white">
+                    저장
+                    </button>
+                    <span id="save-hint" class="text-sm text-gray-400"></span>
+                </div>
+                </div>
+            ` : '';
+
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="font-semibold text-white mb-3">기본 정보</h4>
+                    <div class="space-y-2 text-sm text-gray-300">
+                    <div><strong>상태:</strong> <span class="status-badge ${isOngoing ? 'status-ongoing' : 'status-completed'}">${team.status}</span></div>
+                    <div><strong>기간:</strong> ${team.period}</div>
+                    <div><strong>대회/프로젝트:</strong> ${team.event}</div>
+                    <div><strong>내 역할:</strong> ${team.role}</div>
+                    ${team.achievement ? `<div><strong>성과:</strong> <span class="text-green-400">${team.achievement}</span></div>` : ''}
+                    ${isOngoing ? `<div><strong>모집:</strong> <span id="recruiting-text" class="${summaryText ? 'text-yellow-400' : 'text-gray-400'}">${summaryText || '-'}</span></div>` : ''}
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-3">기술 스택</h4>
+                    <div class="flex flex-wrap">
+                    ${team.techStack.map(tech => `<span class="role-badge">${tech}</span>`).join('')}
+                    </div>
+                </div>
+                </div>
+
+                <div class="mb-6">
+                <h4 class="font-semibold text-white mb-3">팀 소개</h4>
+                <p class="text-gray-300">${team.description}</p>
+                </div>
+
+                ${memberSectionHTML}
+
+                <div class="mb-6">
+                <h4 class="font-semibold text-white mb-3">주요 목표</h4>
+                <ul class="list-disc list-inside text-gray-300 space-y-1">
+                    ${team.goals.map(goal => `<li>${goal}</li>`).join('')}
+                </ul>
+                </div>
+
+                ${team.links ? `
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3">관련 링크</h4>
+                    <div class="space-y-2">
+                    ${team.links.map(link => `
+                        <a href="${link}" target="_blank" class="block text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                        <i class="fas fa-external-link-alt mr-2"></i>${link}
+                        </a>
+                    `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${recruitingManagerHTML}
+            `;
+
+            // 이벤트 바인딩: 리더 & 구성중일 때만
+            if (isLeader && isOngoing) {
+                const container = modalContent.querySelector('#recruiting-roles');
+
+                // 증감/삭제
+                container?.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+
+                const row = btn.closest('[data-idx]');
+                const idx = Number(row?.dataset.idx ?? -1);
+                if (idx < 0) return;
+
+                if (btn.dataset.action === 'inc') {
+                    const num = row.querySelector('input[type="number"]');
+                    num.value = Number(num.value || 0) + 1;
+                }
+                if (btn.dataset.action === 'dec') {
+                    const num = row.querySelector('input[type="number"]');
+                    num.value = Math.max(0, Number(num.value || 0) - 1);
+                }
+                if (btn.dataset.action === 'remove') {
+                    row.remove();
+                    // 인덱스 재정렬은 저장 시에 새로 읽어 갱신합니다.
+                }
+                });
+
+                // 역할 추가
+                modalContent.querySelector('#add-role')?.addEventListener('click', () => {
+                const newIdx = container.querySelectorAll('[data-idx]').length;
+                const div = document.createElement('div');
+                div.className = 'flex items-center space-x-2';
+                div.setAttribute('data-idx', String(newIdx));
+                div.innerHTML = `
+                    <input type="text" class="flex-1 px-3 py-2 rounded bg-gray-800 text-sm"
+                        placeholder="역할명 (예: 디자이너)">
+                    <div class="flex items-center space-x-1">
+                    <button class="px-2 py-1 text-sm border rounded" data-action="dec">-</button>
+                    <input type="number" min="0" class="w-16 text-center px-2 py-1 rounded bg-gray-800 text-sm" value="1">
+                    <button class="px-2 py-1 text-sm border rounded" data-action="inc">+</button>
+                    </div>
+                    <button class="px-2 py-1 text-sm border rounded text-red-300" data-action="remove">삭제</button>
+                `;
+                container.appendChild(div);
+                });
+
+                // 저장
+                modalContent.querySelector('#save-recruiting')?.addEventListener('click', async () => {
+                    // 폼 읽기 → teamData 갱신
+                    const rows = Array.from(modalContent.querySelectorAll('#recruiting-roles [data-idx]'));
+                    const updated = rows.map(r => {
+                        const role = r.querySelector('input[type="text"]').value.trim();
+                        const count = Math.max(0, Number(r.querySelector('input[type="number"]').value || 0));
+                        return { role, count };
+                    }).filter(x => x.role.length > 0 && x.count >= 0);
+
+                    team.recruitingRoles = updated;
+
+                    // 보기용 문자열 생성 (team.recruiting 변수는 더 이상 쓰지 않음)
+                    const summary = recruitingSummary(updated);
+
+                    // 모달 내 텍스트 업데이트
+                    const txt = document.getElementById('recruiting-text');
+                    if (txt) {
+                        txt.classList.toggle('text-yellow-400', !!summary);
+                        txt.classList.toggle('text-gray-400', !summary);
+                        txt.textContent = summary || '-';
+                    }
+
+                    // 카드 하단 문구도 동기화
+                    const card = document.querySelector(`.team-card[data-team-id="${teamId}"]`);
+                    if (card) {
+                        const info = card.querySelector('.text-xs'); // 카드 하단 안내 문구 영역
+                        if (info) {
+                        if (summary) {
+                            info.innerHTML = `
+                            <i class="fas fa-info-circle text-blue-400"></i>
+                            <span class="ml-1">${summary}</span>
+                            `;
+                        } else {
+                            info.innerHTML = `
+                            <i class="fas fa-check text-green-400"></i>
+                            <span class="ml-1">현재 추가 모집 없음</span>
+                            `;
+                        }
+                        }
+                    }
+
+                    document.getElementById('save-hint').textContent = '저장되었습니다.'; // 데모용
+                });
+            }
+
+            document.getElementById('team-modal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+
+        function closeModal() {
+            document.getElementById('team-modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('team-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'team-modal') {
+                closeModal();
+            }
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

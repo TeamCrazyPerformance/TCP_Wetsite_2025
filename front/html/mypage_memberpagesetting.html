@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP - 멤버 페이지 공개 설정 | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        
+        .sidebar-link.active {
+            background-color: rgba(168, 197, 230, 0.2);
+            color: #ffffff;
+        }
+        
+        .sidebar-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        
+        .member-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .member-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .member-card .img-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid transparent;
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            background-image: linear-gradient(var(--secondary-gray), var(--secondary-gray)), linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            margin-bottom: 1rem;
+        }
+
+        .member-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .setting-item {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-item:hover {
+            border-color: rgba(168, 197, 230, 0.3);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: #374151;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+        
+        .notice-badge {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .optional-badge {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .preview-container {
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .hidden-info {
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tech-tag {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.125rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">My Page</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">개인 정보</h3>
+                    <a href="mypage.html" class="sidebar-link">
+                        <i class="fas fa-user"></i><span class="ml-2">프로필 보기/수정</span>
+                    </a>
+                    <a href="mypage_memberpagesetting.html" class="sidebar-link active">
+                        <i class="fas fa-eye"></i><span class="ml-2">멤버 페이지 공개 설정</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">활동 관리</h3>
+                    <a href="mypage_study.html" class="sidebar-link">
+                        <i class="fas fa-book"></i><span class="ml-2">참여 스터디 목록</span>
+                    </a>
+                    <a href="mypage_team.html" class="sidebar-link">
+                        <i class="fas fa-users"></i><span class="ml-2">팀 구성 이력</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">계정 관리</h3>
+                    <a href="mypage_settings.html" class="sidebar-link">
+                        <i class="fas fa-cog"></i><span class="ml-2">개인정보 수정</span>
+                    </a>
+                    <a href="mypage_withdraw.html" class="sidebar-link text-red-400">
+                        <i class="fas fa-sign-out-alt"></i><span class="ml-2">탈퇴 신청</span>
+                    </a>
+                </div>
+
+                <div class="pt-4 border-t border-gray-700">
+                    <a href="index.html" class="sidebar-link">
+                        <i class="fas fa-home"></i><span class="ml-2">메인 페이지로</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="text-2xl font-bold text-white hidden md:block">멤버 페이지 공개 설정</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto max-w-7xl">
+                    <div class="mb-6">
+                        <h3 class="text-3xl font-bold gradient-text mb-2">멤버 페이지 공개 설정</h3>
+                        <p class="text-gray-400">멤버 페이지에서 다른 사람들에게 공개할 정보를 선택해주세요.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Settings Panel -->
+                        <div class="space-y-6">
+                            <!-- Always Visible Section -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-xl font-bold text-white">항상 공개되는 정보</h4>
+                                    <span class="notice-badge">필수</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-6">다음 정보는 멤버 페이지에서 항상 공개됩니다.</p>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 bg-gray-800 bg-opacity-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-user-circle text-blue-400"></i>
+                                            <div>
+                                                <h5 class="font-semibold text-white">프로필 사진</h5>
+                                                <p class="text-sm text-gray-400">설정된 프로필 이미지</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-lock text-gray-500"></i>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-4 bg-gray-800 bg-opacity-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-id-card text-green-400"></i>
+                                            <div>
+                                                <h5 class="font-semibold text-white">이름</h5>
+                                                <p class="text-sm text-gray-400">Admin Kim</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-lock text-gray-500"></i>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-4 bg-gray-800 bg-opacity-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-quote-left text-purple-400"></i>
+                                            <div>
+                                                <h5 class="font-semibold text-white">한 줄 소개</h5>
+                                                <p class="text-sm text-gray-400">안녕하세요! TCP에서 활동 중인 Admin Kim입니다.</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-lock text-gray-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Optional Information Section -->
+                            <div class="widget-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-xl font-bold text-white">선택적 공개 정보</h4>
+                                    <span class="optional-badge">선택</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-6">다음 정보들은 원하는 경우에만 공개할 수 있습니다.</p>
+                                
+                                <div class="space-y-4">
+                                    <div class="setting-item">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-envelope text-blue-400"></i>
+                                                <div>
+                                                    <h5 class="font-semibold text-white">이메일</h5>
+                                                    <p class="text-sm text-gray-400">kimtcp@seoultech.ac.kr</p>
+                                                </div>
+                                            </div>
+                                            <div class="toggle-switch active" data-setting="email" onclick="toggleSetting(this)"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">다른 멤버들이 연락할 수 있도록 이메일을 공개합니다.</p>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-code text-purple-400"></i>
+                                                <div>
+                                                    <h5 class="font-semibold text-white">기술 스택</h5>
+                                                    <p class="text-sm text-gray-400">JavaScript, React, Node.js, Python, MySQL</p>
+                                                </div>
+                                            </div>
+                                            <div class="toggle-switch active" data-setting="techstack" onclick="toggleSetting(this)"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">보유한 기술 스택을 공개하여 협업 기회를 늘립니다.</p>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-briefcase text-green-400"></i>
+                                                <div>
+                                                    <h5 class="font-semibold text-white">현재 상태</h5>
+                                                    <p class="text-sm text-gray-400">컴퓨터공학과 20학번 재학생</p>
+                                                </div>
+                                            </div>
+                                            <div class="toggle-switch active" data-setting="career" onclick="toggleSetting(this)"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">현재 상태와 전공 정보를 공개합니다.</p>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fab fa-github text-pink-400"></i>
+                                                <div>
+                                                    <h5 class="font-semibold text-white">GitHub 링크</h5>
+                                                    <p class="text-sm text-gray-400">github.com/kimtcp</p>
+                                                </div>
+                                            </div>
+                                            <div class="toggle-switch active" data-setting="github" onclick="toggleSetting(this)"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">GitHub 프로필 링크를 공개합니다.</p>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-link text-yellow-400"></i>
+                                                <div>
+                                                    <h5 class="font-semibold text-white">포트폴리오 링크</h5>
+                                                    <p class="text-sm text-gray-400">portfolio.kimtcp.com</p>
+                                                </div>
+                                            </div>
+                                            <div class="toggle-switch active" data-setting="portfolio" onclick="toggleSetting(this)"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">개인 포트폴리오나 블로그 링크를 공개합니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Save Button -->
+                            <div class="flex space-x-4">
+                                <button onclick="saveSettings()" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-colors font-bold">
+                                    <i class="fas fa-save mr-2"></i>설정 저장
+                                </button>
+                                <button onclick="resetSettings()" class="px-6 py-3 border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">
+                                    <i class="fas fa-undo mr-2"></i>초기화
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Preview Panel -->
+                        <div class="preview-container">
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="text-xl font-bold gradient-text mb-4">실시간 미리보기</h4>
+                                <p class="text-sm text-gray-400 mb-6">설정 변경사항이 실시간으로 반영됩니다.</p>
+                                
+                                <!-- Member Card Preview -->
+                                <div id="member-preview" class="member-card p-6 rounded-xl text-center card-hover">
+                                    <div class="img-container mx-auto">
+                                        <img src="https://via.placeholder.com/120/A8C5E6/FFFFFF?text=김TCP" alt="Profile Preview">
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-2 text-white">Admin Kim</h3>
+                                    <p class="text-blue-300 mb-4">안녕하세요! TCP에서 활동 중인 Admin Kim입니다.</p>
+                                    
+                                    <!-- Optional Information -->
+                                    <div id="preview-email" class="mb-2 text-sm text-gray-300">
+                                        <i class="fas fa-envelope text-blue-400 mr-2"></i>kimtcp@seoultech.ac.kr
+                                    </div>
+                                    
+                                    <div id="preview-career" class="mb-4 text-sm text-gray-300">
+                                        <i class="fas fa-graduation-cap text-green-400 mr-2"></i>컴퓨터공학과 20학번 재학생
+                                    </div>
+                                    
+                                    <div id="preview-techstack" class="mb-4">
+                                        <span class="tech-tag">JavaScript</span>
+                                        <span class="tech-tag">React</span>
+                                        <span class="tech-tag">Node.js</span>
+                                        <span class="tech-tag">Python</span>
+                                        <span class="tech-tag">MySQL</span>
+                                    </div>
+                                    
+                                    <div id="preview-links" class="flex justify-center space-x-4">
+                                        <a href="https://github.com/kimtcp" target="_blank" class="text-gray-400 hover:text-blue-400 text-xl">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                        <a href="https://portfolio.kimtcp.com" target="_blank" class="text-gray-400 hover:text-purple-400 text-xl">
+                                            <i class="fas fa-link"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 p-4 bg-gray-800 bg-opacity-50 rounded-lg">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-info-circle text-blue-400"></i>
+                                        <span class="text-sm font-semibold text-white">미리보기 안내</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400">
+                                        위의 카드는 멤버 페이지에서 다른 사용자들이 보게 될 당신의 프로필입니다. 
+                                        설정을 변경하면 실시간으로 업데이트됩니다.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Settings state
+        const settings = {
+            email: true,
+            techstack: true,
+            career: true,
+            github: true,
+            portfolio: true
+        };
+
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Toggle setting function
+        function toggleSetting(element) {
+            const setting = element.getAttribute('data-setting');
+            const isActive = element.classList.contains('active');
+            
+            if (isActive) {
+                element.classList.remove('active');
+                settings[setting] = false;
+            } else {
+                element.classList.add('active');
+                settings[setting] = true;
+            }
+            
+            updatePreview();
+        }
+
+        // Update preview function
+        function updatePreview() {
+            const emailElement = document.getElementById('preview-email');
+            const careerElement = document.getElementById('preview-career');
+            const techstackElement = document.getElementById('preview-techstack');
+            const linksElement = document.getElementById('preview-links');
+            
+            // Email visibility
+            if (settings.email) {
+                emailElement.classList.remove('hidden-info');
+                emailElement.style.display = 'block';
+            } else {
+                emailElement.classList.add('hidden-info');
+                setTimeout(() => {
+                    emailElement.style.display = 'none';
+                }, 300);
+            }
+            
+            // Career visibility
+            if (settings.career) {
+                careerElement.classList.remove('hidden-info');
+                careerElement.style.display = 'block';
+            } else {
+                careerElement.classList.add('hidden-info');
+                setTimeout(() => {
+                    careerElement.style.display = 'none';
+                }, 300);
+            }
+            
+            // Tech stack visibility
+            if (settings.techstack) {
+                techstackElement.classList.remove('hidden-info');
+                techstackElement.style.display = 'block';
+            } else {
+                techstackElement.classList.add('hidden-info');
+                setTimeout(() => {
+                    techstackElement.style.display = 'none';
+                }, 300);
+            }
+            
+            // Links visibility
+            const githubLink = linksElement.children[0];
+            const portfolioLink = linksElement.children[1];
+            
+            if (!settings.github) {
+                githubLink.style.display = 'none';
+            } else {
+                githubLink.style.display = 'inline-block';
+            }
+            
+            if (!settings.portfolio) {
+                portfolioLink.style.display = 'none';
+            } else {
+                portfolioLink.style.display = 'inline-block';
+            }
+            
+            // Hide entire links container if both are hidden
+            if (!settings.github && !settings.portfolio) {
+                linksElement.style.display = 'none';
+            } else {
+                linksElement.style.display = 'flex';
+            }
+        }
+
+        // Save settings function
+        function saveSettings() {
+            // Simulate saving to server
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>저장 중...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>저장됨!';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 1000);
+            }, 1500);
+            
+            console.log('Settings saved:', settings);
+        }
+
+        // Reset settings function
+        function resetSettings() {
+            // Reset all toggles to active
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.classList.add('active');
+                const setting = toggle.getAttribute('data-setting');
+                settings[setting] = true;
+            });
+            
+            updatePreview();
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // Initialize preview
+        updatePreview();
+    </script>
+</body>
+</html>

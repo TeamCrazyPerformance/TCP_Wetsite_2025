@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP Admin Dashboard | Team Crazy Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --accent-blue: #a8c5e6;
+            --accent-purple: #c5a8e6;
+            --accent-green: #a8e6c5;
+            --accent-pink: #e6a8c5;
+        }
+        body {
+            font-family: 'Spoqa Han Sans Neo', sans-serif;
+            background-color: var(--primary-black);
+            color: #ffffff;
+        }
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(168, 197, 230, 0.2);
+        }
+        .widget-card {
+            background: linear-gradient(135deg, var(--secondary-gray), var(--light-gray));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .progress-bar {
+            background-color: var(--light-gray);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 9999px;
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--secondary-gray), var(--primary-black));
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100%;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            color: #cbd5e1; /* gray-300 */
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(168, 197, 230, 0.1);
+            color: #ffffff;
+        }
+        .sidebar-link i {
+            width: 1.5rem; /* w-6 */
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-primary-black">
+    <div class="flex h-screen">
+        <aside id="sidebar" class="sidebar flex-shrink-0 p-4">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <a href="index.html"><img src="logo.svg" alt="TCP 로고" class="w-10 h-10 object-contain"></a>
+                <div>
+                    <a href="index.html"><h1 class="orbitron text-xl font-bold gradient-text">TCP</h1></a>
+                    <p class="orbitron text-xs text-gray-400">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Dashboard</h3>
+                    <a href="admin.html" class="sidebar-link bg-gray-700 text-white">
+                        <i class="fas fa-home"></i><span class="ml-2">Overview</span>
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Page Management</h3>
+                    <a href="admin_main.html" class="sidebar-link"><i class="fas fa-file-alt"></i><span class="ml-2">Main Page</span></a>
+                    <a href="admin_recruitment.html" class="sidebar-link"><i class="fas fa-bullhorn"></i><span class="ml-2">Recruitment Page</span></a>
+                    <a href="admin_announcement.html" class="sidebar-link"><i class="fas fa-newspaper"></i><span class="ml-2">Announcement Page</span></a>
+                    <a href="admin_study.html" class="sidebar-link"><i class="fas fa-book"></i><span class="ml-2">Study Group Page</span></a>
+                    <a href="admin_team.html" class="sidebar-link"><i class="fas fa-users"></i><span class="ml-2">Project Team Page</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Management</h3>
+                    <a href="admin_permission.html" class="sidebar-link"><i class="fas fa-user-shield"></i><span class="ml-2">Manage Permissions</span></a>
+                    <a href="admin_deletaccount.html" class="sidebar-link"><i class="fas fa-user-slash"></i><span class="ml-2">Delete Accounts</span></a>
+                    <a href="#" class="sidebar-link"><i class="fas fa-database"></i><span class="ml-2">Modify Information</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Application Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-user-plus"></i><span class="ml-2">New Member Applications</span></a>
+                </div>
+
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Web Server Management</h3>
+                    <a href="#" class="sidebar-link"><i class="fas fa-server"></i><span class="ml-2">Server Tools</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="flex-shrink-0 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between h-16">
+                        <button id="sidebar-toggle" class="md:hidden text-white">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h2 class="orbitron text-2xl font-bold text-white hidden md:block">Dashboard</h2>
+
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-bell"></i></button>
+                            <div class="flex items-center space-x-2">
+                                <a href="mypage.html"><img src="https://i.pravatar.cc/40?u=admin" alt="Admin" class="w-8 h-8 rounded-full"></a>
+                                <a href="mypage.html"><span class="text-sm font-medium">Admin Kim</span></a>
+                            </div>
+                            <button class="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">로그아웃</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-primary-black p-6">
+                <div class="container mx-auto">
+                    <section class="mb-8">
+                        <h3 class="orbitron text-2xl font-bold gradient-text mb-4">TCP Statistics</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="widget-card p-6 rounded-xl">
+                                <h4 class="font-bold text-lg mb-4 text-blue-300">총 회원 수</h4>
+                                <div class="text-4xl font-black gradient-text mb-4">185</div>
+                                <ul class="text-sm text-gray-300 space-y-2">
+                                    <li class="flex justify-between"><span>재학생</span><span class="font-semibold text-white">52</span></li>
+                                    <li class="flex justify-between"><span>휴학생</span><span class="font-semibold text-white">5</span></li>
+                                    <li class="flex justify-between"><span>졸업생</span><span class="font-semibold text-white">120</span></li>
+                                    <li class="flex justify-between"><span>탈퇴</span><span class="font-semibold text-white">4</span></li>
+                                    <li class="flex justify-between"><span>재적</span><span class="font-semibold text-white">3</span></li>
+                                    <li class="flex justify-between"><span>기타</span><span class="font-semibold text-white">1</span></li>
+                                </ul>
+                            </div>
+                             <div class="widget-card p-6 rounded-xl">
+                                <h4 class="font-bold text-lg mb-4 text-purple-300">총 스터디 수</h4>
+                                <div class="text-4xl font-black gradient-text mb-4">35</div>
+                                <ul class="text-sm text-gray-300 space-y-2">
+                                    <li class="flex justify-between"><span>진행중</span><span class="font-semibold text-white">10</span></li>
+                                    <li class="flex justify-between"><span>완료</span><span class="font-semibold text-white">22</span></li>
+                                    <li class="flex justify-between"><span>취소</span><span class="font-semibold text-white">3</span></li>
+                                    <li class="flex justify-between"><span>기타</span><span class="font-semibold text-white">0</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="orbitron text-2xl font-bold gradient-text mb-4">Server Status Panel</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            <div class="widget-card p-4 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-microchip text-blue-400"></i>
+                                        <h5 class="font-semibold text-gray-300">CPU Usage</h5>
+                                    </div>
+                                    <span class="text-lg font-bold text-white">42%</span>
+                                </div>
+                                <div class="progress-bar h-2"><div class="progress-bar-inner" style="width: 42%;"></div></div>
+                            </div>
+                            <div class="widget-card p-4 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-memory text-purple-400"></i>
+                                        <h5 class="font-semibold text-gray-300">RAM Usage</h5>
+                                    </div>
+                                    <span class="text-lg font-bold text-white">6.8 / 16 GB</span>
+                                </div>
+                                <div class="progress-bar h-2"><div class="progress-bar-inner" style="width: 42.5%;"></div></div>
+                            </div>
+                            <div class="widget-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-thermometer-half text-red-400"></i>
+                                    <h5 class="font-semibold text-gray-300">CPU Temp</h5>
+                                </div>
+                                <span class="text-lg font-bold text-white">58°C</span>
+                            </div>
+                             <div class="widget-card p-4 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-hdd text-green-400"></i>
+                                        <h5 class="font-semibold text-gray-300">Disk Usage</h5>
+                                    </div>
+                                    <span class="text-lg font-bold text-white">75%</span>
+                                </div>
+                                <div class="progress-bar h-2"><div class="progress-bar-inner bg-green-500" style="width: 75%;"></div></div>
+                            </div>
+                            <div class="widget-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-network-wired text-yellow-400"></i>
+                                    <h5 class="font-semibold text-gray-300">Network</h5>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-white"><i class="fas fa-arrow-up"></i> TX: 15.2 Mbps</div>
+                                    <div class="text-sm font-bold text-white"><i class="fas fa-arrow-down"></i> RX: 88.4 Mbps</div>
+                                </div>
+                            </div>
+                            <div class="widget-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-clock text-pink-400"></i>
+                                    <h5 class="font-semibold text-gray-300">Server Uptime</h5>
+                                </div>
+                                <span class="text-sm font-bold text-white">42d 11h 5m</span>
+                            </div>
+                            <div class="widget-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-calendar-alt text-cyan-400"></i>
+                                    <h5 class="font-semibold text-gray-300">Server Time</h5>
+                                </div>
+                                <span id="server-time" class="text-sm font-bold text-white"></span>
+                            </div>
+                            <div class="widget-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-users text-indigo-400"></i>
+                                    <h5 class="font-semibold text-gray-300">Current Users</h5>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-white">Logged-in: 4</div>
+                                    <div class="text-sm font-bold text-white">Guests: 12</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Live server time clock
+        function updateServerTime() {
+            const timeElement = document.getElementById('server-time');
+            if (timeElement) {
+                const now = new Date();
+                timeElement.textContent = now.toLocaleTimeString('ko-KR');
+            }
+        }
+        setInterval(updateServerTime, 1000);
+        updateServerTime(); // Initial call
+    </script>
+</body>
+</html>
