@@ -1,0 +1,49 @@
+services:
+  api:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - DB_HOST=db
+      - JWT_SECRET=my_jwt_secret
+    depends_on:
+      - db
+    # command: sh -c "npm run migration:run && node dist/main.js"
+    # 임시 수정 (migration 제거)
+    command: node dist/main.js
+    
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydb
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.9.0
+    ports:
+      - "5000:5000"     # TCP 입력 포트
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.9.0
+    ports:
+      - "5601:5601"
+    depends_on: ['elasticsearch']
+
+volumes:
+  db-data:
+  esdata:
